@@ -1,0 +1,906 @@
+CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
+
+************************************************************************
+* Convert Any Data
+*
+* Copyright 2024 apm.to Inc. <https://apm.to>
+* SPDX-License-Identifier: MIT
+************************************************************************
+
+  " TODO!: Add test cases for 100% coverage
+  " FUTURE: Add to_codepage conversions CL_ABAP_CODEPAGE
+  " FUTURE?: Replace exceptions with CX_SY_CONVERSION_...
+
+  PUBLIC SECTION.
+
+    CONSTANTS c_version TYPE string VALUE '1.0.0' ##NEEDED.
+
+    CONSTANTS:
+      BEGIN OF c_encoding,
+        ascii     TYPE string VALUE 'ASCII',
+        utf_8     TYPE string VALUE 'UTF8',
+        utf_16_be TYPE string VALUE 'UTF16BE',
+        utf_16_le TYPE string VALUE 'UTF16LE',
+        utf_32_be TYPE string VALUE 'UTF32BE',
+        utf_32_le TYPE string VALUE 'UTF32LE',
+      END OF c_encoding.
+
+    CONSTANTS:
+      " TODO?: We could add all timezones here (~90 in TTZZ)
+      BEGIN OF c_timezone,
+        utc TYPE string VALUE 'UTC',
+      END OF c_timezone.
+
+    CLASS-METHODS create
+      IMPORTING
+        !data         TYPE any
+      RETURNING
+        VALUE(result) TYPE REF TO zcl_convert.
+
+    METHODS constructor
+      IMPORTING
+        !data TYPE any.
+
+    METHODS from
+      IMPORTING
+        !data         TYPE any
+      RETURNING
+        VALUE(result) TYPE REF TO zcl_convert.
+
+    METHODS to_char
+      CHANGING
+        !result TYPE csequence
+      RAISING
+        zcx_error.
+
+    METHODS to_date
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE d
+      RAISING
+        zcx_error.
+
+    METHODS to_time
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE t
+      RAISING
+        zcx_error.
+
+    METHODS to_timestamp
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE timestamp
+      RAISING
+        zcx_error.
+
+    METHODS to_timestampl
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE timestampl
+      RAISING
+        zcx_error.
+
+    METHODS to_utclong
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE utclong
+      RAISING
+        zcx_error.
+
+    METHODS to_epoch
+      IMPORTING
+        !millisec     TYPE i OPTIONAL
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE string
+      RAISING
+        zcx_error.
+
+    METHODS to_unixtime
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE string
+      RAISING
+        zcx_error.
+
+    METHODS to_isotime
+      IMPORTING
+        !timezone     TYPE string DEFAULT c_timezone-utc
+      RETURNING
+        VALUE(result) TYPE string
+      RAISING
+        zcx_error.
+
+    METHODS to_string
+      IMPORTING
+        !encoding      TYPE string DEFAULT c_encoding-utf_8
+        !ignore_errors TYPE abap_bool DEFAULT abap_false
+      RETURNING
+        VALUE(result)  TYPE string
+      RAISING
+        zcx_error.
+
+    METHODS to_hex
+      CHANGING
+        !result TYPE xsequence
+      RAISING
+        zcx_error.
+
+    METHODS to_xstring
+      IMPORTING
+        !encoding      TYPE string DEFAULT c_encoding-utf_8
+        !ignore_errors TYPE abap_bool DEFAULT abap_false
+      RETURNING
+        VALUE(result)  TYPE xstring
+      RAISING
+        zcx_error.
+
+    METHODS to_int
+      RETURNING
+        VALUE(result) TYPE i
+      RAISING
+        zcx_error.
+
+    METHODS to_int8
+      RETURNING
+        VALUE(result) TYPE int8
+      RAISING
+        zcx_error.
+
+    METHODS to_packed
+      CHANGING
+        !result TYPE p
+      RAISING
+        zcx_error.
+
+    METHODS to_float
+      RETURNING
+        VALUE(result) TYPE f
+      RAISING
+        zcx_error.
+
+    METHODS to_decfloat16
+      RETURNING
+        VALUE(result) TYPE decfloat16
+      RAISING
+        zcx_error.
+
+    METHODS to_decfloat34
+      RETURNING
+        VALUE(result) TYPE decfloat34
+      RAISING
+        zcx_error.
+
+    METHODS to_bool
+      RETURNING
+        VALUE(result) TYPE abap_bool
+      RAISING
+        zcx_error.
+
+    METHODS to_typekind
+      RETURNING
+        VALUE(result) TYPE abap_typekind.
+
+    METHODS to_typetext
+      IMPORTING
+        !is_long      TYPE abap_bool DEFAULT abap_false
+      RETURNING
+        VALUE(result) TYPE string.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+    DATA data_ref TYPE REF TO data.
+    DATA typekind TYPE abap_typekind.
+
+    METHODS _conversion_error
+      IMPORTING
+        datatype      TYPE string
+      RETURNING
+        VALUE(result) TYPE string.
+
+ENDCLASS.
+
+
+
+CLASS zcl_convert IMPLEMENTATION.
+
+
+  METHOD constructor.
+
+    from( data ).
+
+  ENDMETHOD.
+
+
+  METHOD create.
+
+    CREATE OBJECT result
+      EXPORTING
+        data = data.
+
+  ENDMETHOD.
+
+
+  METHOD from.
+
+    GET REFERENCE OF data INTO data_ref.
+    typekind = cl_abap_typedescr=>describe_by_data_ref( data_ref )->type_kind.
+
+    result = me.
+
+  ENDMETHOD.
+
+
+  METHOD to_bool.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_char.
+
+        result = boolc( <data> = abap_true ).
+
+      WHEN cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_struct2
+        OR cl_abap_typedescr=>typekind_table
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        " TODO: Does this make sense?
+        result = boolc( <data> IS NOT INITIAL ).
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'bool' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_char.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(string_data) = to_string( ).
+            result = string_data.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'char' ) ).
+        ENDTRY.
+
+        IF result <> string_data.
+          zcx_error=>raise( 'Data is longer than target variable' ).
+        ENDIF.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'char' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_date.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string.
+
+        TRY.
+            result = CONV d( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'date' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            CONVERT TIME STAMP <data> TIME ZONE timezone INTO DATE result.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'date' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'date' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_decfloat16.
+
+    TRY.
+        DATA(decfloat34) = to_decfloat34( ).
+        result = CONV i( decfloat34 ).
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'decfloat16' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_decfloat34.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            result = CONV decfloat34( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'decfloat34' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(string_data) = to_string( ).
+            result = CONV decfloat34( string_data ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'decfloat34' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'decfloat34' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_epoch.
+
+    " Milliseconds for the days since January 1, 1970, 00:00:00 UTC
+    " https://en.wikipedia.org/wiki/Epoch_(computing)
+
+    DATA ms TYPE n LENGTH 3.
+
+    IF millisec < 0 OR millisec > 999.
+      zcx_error=>raise( 'Milliseconds must be between 0 and 999' ).
+    ENDIF.
+
+    TRY.
+        ms = millisec.
+        result = to_unixtime( ) && ms.
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'epoch' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_float.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            result = CONV f( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'float' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(string_data) = to_string( ).
+            result = CONV f( string_data ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'float' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'float' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_hex.
+
+    TRY.
+        DATA(xstring_data) = to_xstring( ).
+        result = xstring_data.
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'hex' ) ).
+    ENDTRY.
+
+    IF result <> xstring_data.
+      zcx_error=>raise( 'Data is longer than target variable' ).
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD to_int.
+
+    TRY.
+        DATA(int8) = to_int8( ).
+        result = CONV i( int8 ).
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'integer' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_int8.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed
+        OR cl_abap_typedescr=>typekind_time.
+
+        TRY.
+            result = CONV int8( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'int8' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(string_data) = to_string( ).
+            result = CONV int8( string_data ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'int8' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'int8' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_isotime.
+
+    " YYYY-MM-DDThh:mm:ssZ format
+    " https://en.m.wikipedia.org/wiki/ISO_8601
+
+    TRY.
+        DATA(timestampl) = to_timestampl( timezone ).
+
+        result = |{ timestampl TIMESTAMP = ISO }|.
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'isotime' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_packed.
+
+    " TODO: Does this handle length and decimals?
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            result = <data>.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'packed' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(string_data) = to_string( ).
+            result = string_data.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'packed' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'packed' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_string.
+
+    FIELD-SYMBOLS <table> TYPE INDEX TABLE.
+
+    lcl_utils=>validate_encoding( encoding ).
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong.
+
+        TRY.
+            result = CONV string( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'string' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_xsequence
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            DATA(xstring_data) = to_xstring( encoding = '' ).
+
+            DATA(class_name) = 'CL_BINARY_CONVERT'.
+            IF ignore_errors = abap_true.
+              class_name &&= '_IGN_CERR'.
+            ENDIF.
+
+            DATA(method_name) = |XSTRING_{ encoding }_TO_STRING|.
+
+            CALL METHOD (class_name)=>(method_name)
+              EXPORTING
+                iv_xstring = xstring_data
+              RECEIVING
+                rv_string  = result.
+          CATCH cx_root INTO DATA(error).
+            zcx_error=>raise( _conversion_error( 'string' ) && error->get_text( ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_table.
+
+        TRY.
+            ASSIGN data_ref->* TO <table>.
+
+            result = concat_lines_of(
+              table = <table>
+              sep   = cl_abap_char_utilities=>newline ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'string' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'string' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_time.
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_time.
+
+        TRY.
+            result = CONV t( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'time' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'time' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_timestamp.
+
+    TRY.
+        DATA(timestampl) = to_timestampl( timezone ).
+        DATA(frac) = frac( timestampl ).
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'timestamp' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_timestampl.
+
+    lcl_utils=>validate_timezone( timezone ).
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            result = CONV timestampl( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'timestampl' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_date.
+
+        TRY.
+            CONVERT DATE <data> INTO TIME STAMP result TIME ZONE timezone.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'timestampl' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_utclong.
+
+        TRY.
+            result = cl_abap_tstmp=>utclong2tstmp( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'timestampl' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'timestampl' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_typekind.
+
+    result = typekind.
+
+  ENDMETHOD.
+
+
+  METHOD to_typetext.
+
+    result = lcl_utils=>to_typetext( typekind ).
+
+  ENDMETHOD.
+
+
+  METHOD to_unixtime.
+
+    " Number of non-leap seconds which have passed since 00:00:00 UTC on Thursday, 1 January 1970
+    " https://en.wikipedia.org/wiki/Unix_time
+
+    TRY.
+        DATA(timestamp_long) = to_timestampl( timezone ).
+
+        CONVERT TIME STAMP timestamp_long TIME ZONE timezone INTO DATE DATA(date) TIME DATA(time).
+
+        " Timestamp for passed days until today in seconds
+        DATA(days_i)          = CONV i( date - '19700101' ).
+        DATA(days_timestamp)  = CONV timestampl( days_i * 60 * 60 * 24 ).
+
+        " Timestamp for time at present day
+        DATA(sec_i)           = CONV i( time ).
+        DATA(secs_timestamp)  = CONV timestampl( sec_i ).
+
+        DATA(unixtime) = CONV timestampl( days_timestamp + secs_timestamp ).
+
+        result = condense( CONV string( unixtime ) ).
+      CATCH cx_root.
+        zcx_error=>raise( _conversion_error( 'unixtime' ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+  METHOD to_utclong.
+
+    DATA t TYPE t.
+
+    lcl_utils=>validate_timezone( timezone ).
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_packed.
+
+        TRY.
+            result = CONV utclong( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'utclong' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_date.
+
+        TRY.
+            CONVERT DATE <data> TIME t TIME ZONE timezone INTO UTCLONG result.
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'utclong' ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'utclong' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD to_xstring.
+
+    lcl_utils=>validate_encoding( encoding ).
+
+    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
+    ASSERT sy-subrc = 0.
+
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        IF encoding IS NOT INITIAL.
+          zcx_error=>raise( 'Cannot convert encoding since data is already in hex format' ).
+        ENDIF.
+
+        TRY.
+            result = CONV xstring( <data> ).
+          CATCH cx_root.
+            zcx_error=>raise( _conversion_error( 'xstring' ) ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_date
+        OR cl_abap_typedescr=>typekind_decfloat16
+        OR cl_abap_typedescr=>typekind_decfloat34
+        OR cl_abap_typedescr=>typekind_float
+        OR cl_abap_typedescr=>typekind_int
+        OR cl_abap_typedescr=>typekind_int1
+        OR cl_abap_typedescr=>typekind_int2
+        OR cl_abap_typedescr=>typekind_int8
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_packed
+        OR cl_abap_typedescr=>typekind_struct1
+        OR cl_abap_typedescr=>typekind_table
+        OR cl_abap_typedescr=>typekind_time
+        OR cl_abap_typedescr=>typekind_utclong.
+
+        TRY.
+            DATA(string_data) = to_string( encoding = '' ).
+
+            DATA(class_name) = 'CL_BINARY_CONVERT'.
+            IF ignore_errors = abap_true.
+              class_name &&= '_IGN_CERR'.
+            ENDIF.
+
+            DATA(method_name) = |STRING_TO_XSTRING_{ encoding }|.
+
+            CALL METHOD (class_name)=>(method_name)
+              EXPORTING
+                iv_string  = string_data
+              RECEIVING
+                rv_xstring = result.
+          CATCH cx_root INTO DATA(error).
+            zcx_error=>raise( _conversion_error( 'xstring' ) && error->get_text( ) ).
+        ENDTRY.
+
+      WHEN OTHERS.
+        zcx_error=>raise( _conversion_error( 'xstring' ) ).
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD _conversion_error.
+
+    result = |Unable to convert { to_typetext( ) } to { datatype }|.
+
+  ENDMETHOD.
+ENDCLASS.
