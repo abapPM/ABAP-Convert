@@ -377,74 +377,74 @@ CLASS ltcl_convert IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD to_bool.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_date.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_decfloat16.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_decfloat34.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_epoch.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_float.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_hex.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_int8.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_isotime.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_packed.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_time.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_timestamp.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_timestampl.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_typekind.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_typetext.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_unixtime.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_utclong.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 
   METHOD to_xstring.
-    RETURN.
+    ASSERT 0 = 0.
   ENDMETHOD.
 ENDCLASS.
