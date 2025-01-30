@@ -24,9 +24,10 @@ Create an instance with the source value and use one of the methods to get the t
 ```abap
 DATA(str) = NEW zcl_convert( value )->to_string( ).
 " or
-DATA(str) = NEW zcl_convert( )->from( value )->to_string( ).
-" or
 DATA(str) = zcl_convert=>create( value )->to_string( ).
+" or
+DATA(conv) = NEW zcl_convert( ).
+DATA(str) = conv->from( value )->to_string( ).
 ```
 
 Method | Description
