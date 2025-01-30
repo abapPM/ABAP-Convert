@@ -31,22 +31,15 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
         utc TYPE string VALUE 'UTC',
       END OF c_timezone.
 
-    TYPES:
-      BEGIN OF ty_options,
-        trim_strings TYPE abap_bool,
-      END OF ty_options.
-
     CLASS-METHODS create
       IMPORTING
         !data         TYPE any
-        !options      TYPE ty_options OPTIONAL
       RETURNING
         VALUE(result) TYPE REF TO zcl_convert.
 
     METHODS constructor
       IMPORTING
-        !data    TYPE any
-        !options TYPE ty_options OPTIONAL.
+        !data TYPE any.
 
     METHODS from
       IMPORTING
@@ -206,7 +199,6 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
     DATA data_ref TYPE REF TO data.
     DATA typekind TYPE abap_typekind.
-    DATA options TYPE ty_options.
 
     METHODS _conversion_error
       IMPORTING
@@ -223,7 +215,6 @@ CLASS zcl_convert IMPLEMENTATION.
 
   METHOD constructor.
 
-    me->options = options.
     from( data ).
 
   ENDMETHOD.
@@ -231,9 +222,9 @@ CLASS zcl_convert IMPLEMENTATION.
 
   METHOD create.
 
-    result = NEW #(
-      data    = data
-      options = options ).
+    CREATE OBJECT result
+      EXPORTING
+        data = data.
 
   ENDMETHOD.
 
@@ -256,7 +247,7 @@ CLASS zcl_convert IMPLEMENTATION.
     CASE typekind.
       WHEN cl_abap_typedescr=>typekind_char.
 
-        result = xsdbool( <data> = abap_true ).
+        result = boolc( <data> = abap_true ).
 
       WHEN cl_abap_typedescr=>typekind_date
         OR cl_abap_typedescr=>typekind_decfloat16
@@ -278,7 +269,7 @@ CLASS zcl_convert IMPLEMENTATION.
         OR cl_abap_typedescr=>typekind_xstring.
 
         " TODO: Does this make sense?
-        result = xsdbool( <data> IS NOT INITIAL ).
+        result = boolc( <data> IS NOT INITIAL ).
 
       WHEN OTHERS.
         zcx_error=>raise( _conversion_error( 'bool' ) ).
@@ -318,7 +309,7 @@ CLASS zcl_convert IMPLEMENTATION.
             zcx_error=>raise( _conversion_error( 'char' ) ).
         ENDTRY.
 
-        IF condense( result ) <> condense( string_data ).
+        IF result <> string_data.
           zcx_error=>raise( 'Data is longer than target variable' ).
         ENDIF.
 
@@ -364,7 +355,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
     TRY.
         DATA(decfloat34) = to_decfloat34( ).
-        result = CONV decfloat16( decfloat34 ).
+        result = CONV i( decfloat34 ).
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'decfloat16' ) ).
     ENDTRY.
@@ -422,14 +413,14 @@ CLASS zcl_convert IMPLEMENTATION.
     " Milliseconds for the days since January 1, 1970, 00:00:00 UTC
     " https://en.wikipedia.org/wiki/Epoch_(computing)
 
-    TYPES ty_ms TYPE n LENGTH 3.
+    DATA ms TYPE n LENGTH 3.
 
     IF millisec < 0 OR millisec > 999.
       zcx_error=>raise( 'Milliseconds must be between 0 and 999' ).
     ENDIF.
 
     TRY.
-        DATA(ms) = CONV ty_ms( millisec ).
+        ms = millisec.
         result = to_unixtime( ) && ms.
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'epoch' ) ).
@@ -647,7 +638,6 @@ CLASS zcl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV string( <data> ).
-            " FIXME? Might have a trailing space. Should we trim it?
           CATCH cx_root.
             zcx_error=>raise( _conversion_error( 'string' ) ).
         ENDTRY.
@@ -661,7 +651,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
             DATA(class_name) = 'CL_BINARY_CONVERT'.
             IF ignore_errors = abap_true.
-              class_name = class_name && '_IGN_CERR'.
+              class_name &&= '_IGN_CERR'.
             ENDIF.
 
             DATA(method_name) = |XSTRING_{ encoding }_TO_STRING|.
@@ -680,8 +670,6 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             ASSIGN data_ref->* TO <table>.
 
-            " Only works for flat tables
-            " TODO: Deep tables (should be local class)
             result = concat_lines_of(
               table = <table>
               sep   = cl_abap_char_utilities=>newline ).
@@ -692,10 +680,6 @@ CLASS zcl_convert IMPLEMENTATION.
       WHEN OTHERS.
         zcx_error=>raise( _conversion_error( 'string' ) ).
     ENDCASE.
-
-    IF options-trim_strings = abap_true.
-      result = condense( result ).
-    ENDIF.
 
   ENDMETHOD.
 
@@ -729,10 +713,6 @@ CLASS zcl_convert IMPLEMENTATION.
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
         DATA(frac) = frac( timestampl ).
-        IF frac <> 0.
-          zcx_error=>raise( _conversion_error( 'timestamp' ) ).
-        ENDIF.
-        result = timestampl ##TYPE.
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'timestamp' ) ).
     ENDTRY.
@@ -897,7 +877,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
             DATA(class_name) = 'CL_BINARY_CONVERT'.
             IF ignore_errors = abap_true.
-              class_name = class_name && '_IGN_CERR'.
+              class_name &&= '_IGN_CERR'.
             ENDIF.
 
             DATA(method_name) = |STRING_TO_XSTRING_{ encoding }|.
