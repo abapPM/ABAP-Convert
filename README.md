@@ -4,7 +4,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?color=success)](https://github.com/abapPM/.github/blob/main/CODE_OF_CONDUCT.md)
 [![REUSE Status](https://api.reuse.software/badge/github.com/abapPM/ABAP-Convert)](https://api.reuse.software/info/github.com/abapPM/ABAP-Convert)
 
-# Convert Anything
+# Convert Any Data Type
 
 The last class you will need to convert between data types. Well, that's the goal 😁
 
@@ -13,6 +13,9 @@ Do you remember how to convert a string to an xstring? How about an ABAP timesta
 Look no further and use this class 😄
 
 NO WARRANTIES, [MIT License](https://github.com/abapPM/ABAP-Convert/blob/main/LICENSE)
+
+> [!NOTE]
+> It might make sense to move various date/time conversions into a separate "Temporal" object like in [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal). Open an issue to discuss if you're interested!
 
 ## Usage
 
