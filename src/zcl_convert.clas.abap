@@ -256,7 +256,7 @@ CLASS zcl_convert IMPLEMENTATION.
     CASE typekind.
       WHEN cl_abap_typedescr=>typekind_char.
 
-        result = boolc( <data> = abap_true ).
+        result = xsdbool( <data> = abap_true ).
 
       WHEN cl_abap_typedescr=>typekind_date
         OR cl_abap_typedescr=>typekind_decfloat16
@@ -278,7 +278,7 @@ CLASS zcl_convert IMPLEMENTATION.
         OR cl_abap_typedescr=>typekind_xstring.
 
         " TODO: Does this make sense?
-        result = boolc( <data> IS NOT INITIAL ).
+        result = xsdbool( <data> IS NOT INITIAL ).
 
       WHEN OTHERS.
         zcx_error=>raise( _conversion_error( 'bool' ) ).
@@ -422,14 +422,14 @@ CLASS zcl_convert IMPLEMENTATION.
     " Milliseconds for the days since January 1, 1970, 00:00:00 UTC
     " https://en.wikipedia.org/wiki/Epoch_(computing)
 
-    DATA ms TYPE n LENGTH 3.
+    TYPES ty_ms TYPE n LENGTH 3.
 
     IF millisec < 0 OR millisec > 999.
       zcx_error=>raise( 'Milliseconds must be between 0 and 999' ).
     ENDIF.
 
     TRY.
-        ms = millisec.
+        DATA(ms) = CONV ty_ms( millisec ).
         result = to_unixtime( ) && ms.
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'epoch' ) ).
@@ -661,7 +661,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
             DATA(class_name) = 'CL_BINARY_CONVERT'.
             IF ignore_errors = abap_true.
-              class_name &&= '_IGN_CERR'.
+              class_name = class_name && '_IGN_CERR'.
             ENDIF.
 
             DATA(method_name) = |XSTRING_{ encoding }_TO_STRING|.
@@ -897,7 +897,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
             DATA(class_name) = 'CL_BINARY_CONVERT'.
             IF ignore_errors = abap_true.
-              class_name &&= '_IGN_CERR'.
+              class_name = class_name && '_IGN_CERR'.
             ENDIF.
 
             DATA(method_name) = |STRING_TO_XSTRING_{ encoding }|.

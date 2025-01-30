@@ -114,7 +114,7 @@ CLASS ltcl_convert IMPLEMENTATION.
     timestampl     = NEW #( c_test-timestampl ).
     utclong        = NEW #( c_test-utclong ).
     " Example with trimming result
-    " i = NEW #( data = c_test-i options = VALUE #( trim_strings = abap_true ) ).
+    " i = NEW #( data = c_test-i options = VALUE #( trim_strings = abap_true ) )
   ENDMETHOD.
 
   METHOD to_int.
@@ -377,74 +377,74 @@ CLASS ltcl_convert IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD to_bool.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_date.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_decfloat16.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_decfloat34.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_epoch.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_float.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_hex.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_int8.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_isotime.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_packed.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_time.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_timestamp.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_timestampl.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_typekind.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_typetext.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_unixtime.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_utclong.
-
+    RETURN.
   ENDMETHOD.
 
   METHOD to_xstring.
-
+    RETURN.
   ENDMETHOD.
 ENDCLASS.
