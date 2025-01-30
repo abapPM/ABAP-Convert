@@ -31,15 +31,22 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
         utc TYPE string VALUE 'UTC',
       END OF c_timezone.
 
+    TYPES:
+      BEGIN OF ty_options,
+        trim_strings TYPE abap_bool,
+      END OF ty_options.
+
     CLASS-METHODS create
       IMPORTING
         !data         TYPE any
+        !options      TYPE ty_options OPTIONAL
       RETURNING
         VALUE(result) TYPE REF TO zcl_convert.
 
     METHODS constructor
       IMPORTING
-        !data TYPE any.
+        !data    TYPE any
+        !options TYPE ty_options OPTIONAL.
 
     METHODS from
       IMPORTING
@@ -199,6 +206,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
     DATA data_ref TYPE REF TO data.
     DATA typekind TYPE abap_typekind.
+    DATA options TYPE ty_options.
 
     METHODS _conversion_error
       IMPORTING
@@ -215,6 +223,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
   METHOD constructor.
 
+    me->options = options.
     from( data ).
 
   ENDMETHOD.
@@ -222,9 +231,9 @@ CLASS zcl_convert IMPLEMENTATION.
 
   METHOD create.
 
-    CREATE OBJECT result
-      EXPORTING
-        data = data.
+    result = NEW #(
+      data    = data
+      options = options ).
 
   ENDMETHOD.
 
@@ -309,7 +318,7 @@ CLASS zcl_convert IMPLEMENTATION.
             zcx_error=>raise( _conversion_error( 'char' ) ).
         ENDTRY.
 
-        IF result <> string_data.
+        IF condense( result ) <> condense( string_data ).
           zcx_error=>raise( 'Data is longer than target variable' ).
         ENDIF.
 
@@ -355,7 +364,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
     TRY.
         DATA(decfloat34) = to_decfloat34( ).
-        result = CONV i( decfloat34 ).
+        result = CONV decfloat16( decfloat34 ).
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'decfloat16' ) ).
     ENDTRY.
@@ -638,6 +647,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV string( <data> ).
+            " FIXME? Might have a trailing space. Should we trim it?
           CATCH cx_root.
             zcx_error=>raise( _conversion_error( 'string' ) ).
         ENDTRY.
@@ -670,6 +680,8 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             ASSIGN data_ref->* TO <table>.
 
+            " Only works for flat tables
+            " TODO: Deep tables (should be local class)
             result = concat_lines_of(
               table = <table>
               sep   = cl_abap_char_utilities=>newline ).
@@ -680,6 +692,10 @@ CLASS zcl_convert IMPLEMENTATION.
       WHEN OTHERS.
         zcx_error=>raise( _conversion_error( 'string' ) ).
     ENDCASE.
+
+    IF options-trim_strings = abap_true.
+      result = condense( result ).
+    ENDIF.
 
   ENDMETHOD.
 
@@ -713,6 +729,10 @@ CLASS zcl_convert IMPLEMENTATION.
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
         DATA(frac) = frac( timestampl ).
+        IF frac <> 0.
+          zcx_error=>raise( _conversion_error( 'timestamp' ) ).
+        ENDIF.
+        result = timestampl ##TYPE.
       CATCH cx_root.
         zcx_error=>raise( _conversion_error( 'timestamp' ) ).
     ENDTRY.

@@ -27,6 +27,7 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
         xstr           TYPE xstring VALUE '4265726E617264',
         timestamp      TYPE timestamp VALUE '20010203123456',
         timestampl     TYPE timestampl VALUE '20010203123456.789',
+        utclong        TYPE utclong VALUE '1972-06-01T12:34:56.7890123',
       END OF c_test.
 
     CONSTANTS:
@@ -36,7 +37,6 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
       END OF c_regex.
 
     DATA:
-      utc            TYPE utclong,
       i              TYPE REF TO zcl_convert,
       i8             TYPE REF TO zcl_convert,
       f              TYPE REF TO zcl_convert,
@@ -63,15 +63,33 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
 
     METHODS:
       setup,
+      to_char FOR TESTING RAISING zcx_error,
+      to_bool FOR TESTING RAISING zcx_error,
+      to_date FOR TESTING RAISING zcx_error,
+      to_decfloat16 FOR TESTING RAISING zcx_error,
+      to_decfloat34 FOR TESTING RAISING zcx_error,
+      to_epoch FOR TESTING RAISING zcx_error,
+      to_float FOR TESTING RAISING zcx_error,
+      to_hex FOR TESTING RAISING zcx_error,
       to_int FOR TESTING RAISING zcx_error,
-      to_string FOR TESTING RAISING zcx_error.
+      to_int8 FOR TESTING RAISING zcx_error,
+      to_isotime FOR TESTING RAISING zcx_error,
+      to_packed FOR TESTING RAISING zcx_error,
+      to_string FOR TESTING RAISING zcx_error,
+      to_time FOR TESTING RAISING zcx_error,
+      to_timestamp FOR TESTING RAISING zcx_error,
+      to_timestampl FOR TESTING RAISING zcx_error,
+      to_typekind FOR TESTING RAISING zcx_error,
+      to_typetext FOR TESTING RAISING zcx_error,
+      to_unixtime FOR TESTING RAISING zcx_error,
+      to_utclong FOR TESTING RAISING zcx_error,
+      to_xstring FOR TESTING RAISING zcx_error.
 
 ENDCLASS.
 
 CLASS ltcl_convert IMPLEMENTATION.
 
   METHOD setup.
-    utc = utclong_current( ).
     i              = NEW #( c_test-i ).
     i8             = NEW #( c_test-i8 ).
     f              = NEW #( c_test-f ).
@@ -94,7 +112,9 @@ CLASS ltcl_convert IMPLEMENTATION.
     xstr           = NEW #( c_test-xstr ).
     timestamp      = NEW #( c_test-timestamp ).
     timestampl     = NEW #( c_test-timestampl ).
-    utclong        = NEW #( utc ).
+    utclong        = NEW #( c_test-utclong ).
+    " Example with trimming result
+    " i = NEW #( data = c_test-i options = VALUE #( trim_strings = abap_true ) ).
   ENDMETHOD.
 
   METHOD to_int.
@@ -196,6 +216,10 @@ CLASS ltcl_convert IMPLEMENTATION.
   METHOD to_string.
 
     cl_abap_unit_assert=>assert_equals(
+      act = str->to_string( )
+      exp = c_test-str ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = i->to_string( )
       exp = `123456 ` ).
 
@@ -232,10 +256,6 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = `00014` ).
 
     cl_abap_unit_assert=>assert_equals(
-      act = str->to_string( )
-      exp = c_test-str ).
-
-    cl_abap_unit_assert=>assert_equals(
       act = d->to_string( )
       exp = `20221126` ).
 
@@ -259,9 +279,172 @@ CLASS ltcl_convert IMPLEMENTATION.
       act = timestampl->to_string( )
       exp = `20010203123456.7890000 ` ).
 
-    cl_abap_unit_assert=>assert_text_matches(
-      text    = utclong->to_string( )
-      pattern = c_regex-utc_default ).
+    cl_abap_unit_assert=>assert_equals(
+      act = utclong->to_string( )
+      exp = `1972-06-01 12:34:56.7890123` ).
+
+  ENDMETHOD.
+
+  METHOD to_char.
+
+    DATA act TYPE c LENGTH 30.
+
+    c->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = c_test-c ).
+
+    i->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '123456 ' ).
+
+    i8->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '1234567890123456 ' ).
+
+    f->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '1.2340000000000000E+10' ).
+
+    d16->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '1.23400000000E+380' ).
+
+    d34->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '1.234E+6000' ).
+
+    p->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '123456.7890000000 ' ).
+
+    c_number->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '12345678' ).
+
+    n->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '00014' ).
+
+    str->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = 'marcfbe' ).
+
+    d->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '20221126' ).
+
+    t->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '123456' ).
+
+    x->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = 'Marc' ).
+
+    xstr->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = 'Bernard' ).
+
+    timestamp->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '20010203123456 ' ).
+
+    timestampl->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '20010203123456.7890000 ' ).
+
+    utclong->to_char( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '1972-06-01 12:34:56.7890123' ).
+
+  ENDMETHOD.
+
+  METHOD to_bool.
+
+  ENDMETHOD.
+
+  METHOD to_date.
+
+  ENDMETHOD.
+
+  METHOD to_decfloat16.
+
+  ENDMETHOD.
+
+  METHOD to_decfloat34.
+
+  ENDMETHOD.
+
+  METHOD to_epoch.
+
+  ENDMETHOD.
+
+  METHOD to_float.
+
+  ENDMETHOD.
+
+  METHOD to_hex.
+
+  ENDMETHOD.
+
+  METHOD to_int8.
+
+  ENDMETHOD.
+
+  METHOD to_isotime.
+
+  ENDMETHOD.
+
+  METHOD to_packed.
+
+  ENDMETHOD.
+
+  METHOD to_time.
+
+  ENDMETHOD.
+
+  METHOD to_timestamp.
+
+  ENDMETHOD.
+
+  METHOD to_timestampl.
+
+  ENDMETHOD.
+
+  METHOD to_typekind.
+
+  ENDMETHOD.
+
+  METHOD to_typetext.
+
+  ENDMETHOD.
+
+  METHOD to_unixtime.
+
+  ENDMETHOD.
+
+  METHOD to_utclong.
+
+  ENDMETHOD.
+
+  METHOD to_xstring.
 
   ENDMETHOD.
 ENDCLASS.
