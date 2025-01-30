@@ -6,19 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 and [ISO Date Format](https://www.iso.org/iso-8601-date-and-time-format.html).
 
-## [Unreleased]
+See [unreleased changes] for the latest updates.
 
-### Added 
-
-### Changed
-
-### Fixed
-
-
-## Version [1.0.0] - 2022-01-01
+## Version [1.0.0] - 2025-01-01
 
 Initial Release.
 
-
-[Unreleased]: https://github.com/abapPM/ABAP-.../compare/1.0.0...main
-[1.0.0]: https://github.com/abapPM/ABAP-.../releases/tag/1.0.0
+[unreleased changes]: https://github.com/abapPM/ABAP-Convert/compare/1.0.0...main
+[1.0.0]: https://github.com/abapPM/ABAP-Convert/releases/tag/1.0.0
