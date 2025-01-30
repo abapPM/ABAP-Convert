@@ -8,7 +8,7 @@
 
 The last class you will need to convert between data types. Well, that's the goal 😁
 
-Do you remember how to convert a string to an xstring? How about an ABAP timestamp to Unixtime? Or a string to a CHAR with overflow check? Don't recall the syntax for the right string template? 🤔
+Do you remember how to convert a string to an xstring? How about an ABAP timestamp to Unixtime? Or a string to a CHAR with overflow check? Don't recall the syntax for the right string template to convert a timestamp to an ISO date? 🤔
 
 Look no further and use this class 😄
 
@@ -82,8 +82,8 @@ Recommended SAP package: `$CONVERT`
 
 ## About
 
-Made with ❤️ in Canada
+Made with ❤ in Canada
 
 Copyright 2025 apm.to Inc. <https://apm.to>
 
-Follow [@marcf.be](https://bsky.app/profile/marcf.be) on Blueksy and [marcfbe](https://linkedin.com/in/marcfbe) or LinkedIn
+Follow [@marcf.be](https://bsky.app/profile/marcf.be) on Blueksy and [@marcfbe](https://linkedin.com/in/marcfbe) or LinkedIn
