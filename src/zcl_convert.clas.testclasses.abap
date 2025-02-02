@@ -34,7 +34,7 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
       BEGIN OF c_regex,
         utc_iso     TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$',
         utc_default TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{7})$',
-      END OF c_regex.
+      END OF c_regex ##NEEDED.
 
     DATA:
       i              TYPE REF TO zcl_convert,
@@ -124,25 +124,25 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = c_test-i ).
 
     TRY.
-        DATA(_i8) = i8->to_int( ).
+        i8->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_f) = f->to_int( ).
+        f->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_d16) = d16->to_int( ).
+        d16->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_d34) = d34->to_int( ).
+        d34->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
@@ -152,7 +152,7 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = 123457 ).
 
     TRY.
-        DATA(_c) = c->to_int( ).
+        c->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
@@ -166,7 +166,7 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = 14 ).
 
     TRY.
-        DATA(_str) = str->to_int( ).
+        str->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
@@ -188,25 +188,25 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = 1298231907 ).
 
     TRY.
-        DATA(_xstr) = xstr->to_int( ).
+        xstr->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_ts) = timestamp->to_int( ).
+        timestamp->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_tl) = timestampl->to_int( ).
+        timestampl->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.
 
     TRY.
-        DATA(_utc) = utclong->to_int( ).
+        utclong->to_int( ).
         cl_abap_unit_assert=>fail( ).
       CATCH zcx_error.
     ENDTRY.

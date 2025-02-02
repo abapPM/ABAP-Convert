@@ -74,7 +74,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE t
       RAISING
-        zcx_error.
+        zcx_error ##NEEDED.
 
     METHODS to_timestamp
       IMPORTING
@@ -107,7 +107,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        zcx_error.
+        zcx_error ##NEEDED.
 
     METHODS to_unixtime
       IMPORTING
@@ -200,7 +200,6 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
         !is_long      TYPE abap_bool DEFAULT abap_false
       RETURNING
         VALUE(result) TYPE string.
-
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -288,9 +287,6 @@ CLASS zcl_convert IMPLEMENTATION.
 
 
   METHOD to_char.
-
-    ASSIGN data_ref->* TO FIELD-SYMBOL(<data>).
-    ASSERT sy-subrc = 0.
 
     CASE typekind.
       WHEN cl_abap_typedescr=>typekind_char
@@ -664,7 +660,7 @@ CLASS zcl_convert IMPLEMENTATION.
               class_name = class_name && '_IGN_CERR'.
             ENDIF.
 
-            DATA(method_name) = |XSTRING_{ encoding }_TO_STRING|.
+            DATA(method_name) = |XSTRING_{ encoding }_TO_STRING| ##NEEDED. " abaplint #3543
 
             CALL METHOD (class_name)=>(method_name)
               EXPORTING
@@ -788,7 +784,9 @@ CLASS zcl_convert IMPLEMENTATION.
 
   METHOD to_typetext.
 
-    result = lcl_utils=>to_typetext( typekind ).
+    result = lcl_utils=>to_typetext(
+      typekind = typekind
+      is_long  = is_long ).
 
   ENDMETHOD.
 
@@ -900,7 +898,7 @@ CLASS zcl_convert IMPLEMENTATION.
               class_name = class_name && '_IGN_CERR'.
             ENDIF.
 
-            DATA(method_name) = |STRING_TO_XSTRING_{ encoding }|.
+            DATA(method_name) = |STRING_TO_XSTRING_{ encoding }| ##NEEDED. " abaplint #3543
 
             CALL METHOD (class_name)=>(method_name)
               EXPORTING
