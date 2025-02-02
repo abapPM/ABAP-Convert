@@ -1,7 +1,7 @@
 CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
 ************************************************************************
-* Convert Any Data
+* Convert Any Data Type
 *
 * Copyright 2024 apm.to Inc. <https://apm.to>
 * SPDX-License-Identifier: MIT
