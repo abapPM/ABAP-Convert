@@ -30,11 +30,12 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
         utclong        TYPE utclong VALUE '1972-06-01T12:34:56.7890123',
       END OF c_test.
 
-    CONSTANTS:
-      BEGIN OF c_regex,
-        utc_iso     TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$',
-        utc_default TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{7})$',
-      END OF c_regex ##NEEDED.
+* FUTURE
+*    CONSTANTS:
+*      BEGIN OF c_regex,
+*        utc_iso     TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$',
+*        utc_default TYPE string VALUE '^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{7})$',
+*      END OF c_regex
 
     DATA:
       i              TYPE REF TO zcl_convert,
