@@ -38,53 +38,53 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
 *      END OF c_regex
 
     DATA:
-      i              TYPE REF TO zcl_convert,
-      i8             TYPE REF TO zcl_convert,
-      f              TYPE REF TO zcl_convert,
-      d16            TYPE REF TO zcl_convert,
-      d34            TYPE REF TO zcl_convert,
-      p              TYPE REF TO zcl_convert,
-      c              TYPE REF TO zcl_convert,
-      c_number       TYPE REF TO zcl_convert,
-      n              TYPE REF TO zcl_convert,
-      str            TYPE REF TO zcl_convert,
-      str_number     TYPE REF TO zcl_convert,
-      str_float      TYPE REF TO zcl_convert,
-      str_date       TYPE REF TO zcl_convert,
-      str_time       TYPE REF TO zcl_convert,
-      str_timestamp  TYPE REF TO zcl_convert,
-      str_timestampl TYPE REF TO zcl_convert,
-      d              TYPE REF TO zcl_convert,
-      t              TYPE REF TO zcl_convert,
-      x              TYPE REF TO zcl_convert,
-      xstr           TYPE REF TO zcl_convert,
-      timestamp      TYPE REF TO zcl_convert,
-      timestampl     TYPE REF TO zcl_convert,
-      utclong        TYPE REF TO zcl_convert.
+      i              TYPE REF TO /apmg/cl_convert,
+      i8             TYPE REF TO /apmg/cl_convert,
+      f              TYPE REF TO /apmg/cl_convert,
+      d16            TYPE REF TO /apmg/cl_convert,
+      d34            TYPE REF TO /apmg/cl_convert,
+      p              TYPE REF TO /apmg/cl_convert,
+      c              TYPE REF TO /apmg/cl_convert,
+      c_number       TYPE REF TO /apmg/cl_convert,
+      n              TYPE REF TO /apmg/cl_convert,
+      str            TYPE REF TO /apmg/cl_convert,
+      str_number     TYPE REF TO /apmg/cl_convert,
+      str_float      TYPE REF TO /apmg/cl_convert,
+      str_date       TYPE REF TO /apmg/cl_convert,
+      str_time       TYPE REF TO /apmg/cl_convert,
+      str_timestamp  TYPE REF TO /apmg/cl_convert,
+      str_timestampl TYPE REF TO /apmg/cl_convert,
+      d              TYPE REF TO /apmg/cl_convert,
+      t              TYPE REF TO /apmg/cl_convert,
+      x              TYPE REF TO /apmg/cl_convert,
+      xstr           TYPE REF TO /apmg/cl_convert,
+      timestamp      TYPE REF TO /apmg/cl_convert,
+      timestampl     TYPE REF TO /apmg/cl_convert,
+      utclong        TYPE REF TO /apmg/cl_convert.
 
     METHODS:
       setup,
-      to_char FOR TESTING RAISING zcx_error,
-      to_bool FOR TESTING RAISING zcx_error,
-      to_date FOR TESTING RAISING zcx_error,
-      to_decfloat16 FOR TESTING RAISING zcx_error,
-      to_decfloat34 FOR TESTING RAISING zcx_error,
-      to_epoch FOR TESTING RAISING zcx_error,
-      to_float FOR TESTING RAISING zcx_error,
-      to_hex FOR TESTING RAISING zcx_error,
-      to_int FOR TESTING RAISING zcx_error,
-      to_int8 FOR TESTING RAISING zcx_error,
-      to_isotime FOR TESTING RAISING zcx_error,
-      to_packed FOR TESTING RAISING zcx_error,
-      to_string FOR TESTING RAISING zcx_error,
-      to_time FOR TESTING RAISING zcx_error,
-      to_timestamp FOR TESTING RAISING zcx_error,
-      to_timestampl FOR TESTING RAISING zcx_error,
-      to_typekind FOR TESTING RAISING zcx_error,
-      to_typetext FOR TESTING RAISING zcx_error,
-      to_unixtime FOR TESTING RAISING zcx_error,
-      to_utclong FOR TESTING RAISING zcx_error,
-      to_xstring FOR TESTING RAISING zcx_error.
+      to_char FOR TESTING RAISING /apmg/cx_error,
+      to_bool FOR TESTING RAISING /apmg/cx_error,
+      to_date FOR TESTING RAISING /apmg/cx_error,
+      to_decfloat16 FOR TESTING RAISING /apmg/cx_error,
+      to_decfloat34 FOR TESTING RAISING /apmg/cx_error,
+      to_epoch FOR TESTING RAISING /apmg/cx_error,
+      to_float FOR TESTING RAISING /apmg/cx_error,
+      to_hex FOR TESTING RAISING /apmg/cx_error,
+      to_int FOR TESTING RAISING /apmg/cx_error,
+      to_int8 FOR TESTING RAISING /apmg/cx_error,
+      to_isotime FOR TESTING RAISING /apmg/cx_error,
+      to_packed FOR TESTING RAISING /apmg/cx_error,
+      to_string FOR TESTING RAISING /apmg/cx_error,
+      to_time FOR TESTING RAISING /apmg/cx_error,
+      to_timestamp FOR TESTING RAISING /apmg/cx_error,
+      to_timestampl FOR TESTING RAISING /apmg/cx_error,
+      to_typekind FOR TESTING RAISING /apmg/cx_error,
+      to_typetext FOR TESTING RAISING /apmg/cx_error,
+      to_unixtime FOR TESTING RAISING /apmg/cx_error,
+      to_utclong FOR TESTING RAISING /apmg/cx_error,
+      to_xstring FOR TESTING RAISING /apmg/cx_error.
 
 ENDCLASS.
 
@@ -127,25 +127,25 @@ CLASS ltcl_convert IMPLEMENTATION.
     TRY.
         i8->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         f->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         d16->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         d34->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals(
@@ -155,7 +155,7 @@ CLASS ltcl_convert IMPLEMENTATION.
     TRY.
         c->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals(
@@ -169,7 +169,7 @@ CLASS ltcl_convert IMPLEMENTATION.
     TRY.
         str->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals(
@@ -191,25 +191,25 @@ CLASS ltcl_convert IMPLEMENTATION.
     TRY.
         xstr->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         timestamp->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         timestampl->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
     TRY.
         utclong->to_int( ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_error.
+      CATCH /apmg/cx_error.
     ENDTRY.
 
   ENDMETHOD.

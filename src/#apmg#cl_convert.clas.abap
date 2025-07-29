@@ -1,4 +1,4 @@
-CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
+CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
 ************************************************************************
 * Convert Any Data Type
@@ -9,7 +9,6 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
   " TODO!: Add test cases for 100% coverage
   " FUTURE: Add to_codepage conversions CL_ABAP_CODEPAGE
-  " FUTURE?: Replace exceptions with CX_SY_CONVERSION_...
 
   PUBLIC SECTION.
 
@@ -41,7 +40,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
         !data         TYPE any
         !options      TYPE ty_options OPTIONAL
       RETURNING
-        VALUE(result) TYPE REF TO zcl_convert.
+        VALUE(result) TYPE REF TO /apmg/cl_convert.
 
     METHODS constructor
       IMPORTING
@@ -52,13 +51,13 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       IMPORTING
         !data         TYPE any
       RETURNING
-        VALUE(result) TYPE REF TO zcl_convert.
+        VALUE(result) TYPE REF TO /apmg/cl_convert.
 
     METHODS to_char
       CHANGING
         !result TYPE csequence
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_date
       IMPORTING
@@ -66,7 +65,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE d
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_time
       IMPORTING
@@ -74,7 +73,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE t
       RAISING
-        zcx_error ##NEEDED.
+        /apmg/cx_error ##NEEDED.
 
     METHODS to_timestamp
       IMPORTING
@@ -82,7 +81,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE timestamp
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_timestampl
       IMPORTING
@@ -90,7 +89,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE timestampl
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_utclong
       IMPORTING
@@ -98,7 +97,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE utclong
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_epoch
       IMPORTING
@@ -107,7 +106,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        zcx_error ##NEEDED.
+        /apmg/cx_error ##NEEDED.
 
     METHODS to_unixtime
       IMPORTING
@@ -115,7 +114,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_isotime
       IMPORTING
@@ -123,7 +122,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_string
       IMPORTING
@@ -132,13 +131,13 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result)  TYPE string
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_hex
       CHANGING
         !result TYPE xsequence
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_xstring
       IMPORTING
@@ -147,49 +146,49 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
       RETURNING
         VALUE(result)  TYPE xstring
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_int
       RETURNING
         VALUE(result) TYPE i
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_int8
       RETURNING
         VALUE(result) TYPE int8
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_packed
       CHANGING
         !result TYPE p
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_float
       RETURNING
         VALUE(result) TYPE f
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_decfloat16
       RETURNING
         VALUE(result) TYPE decfloat16
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_decfloat34
       RETURNING
         VALUE(result) TYPE decfloat34
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_bool
       RETURNING
         VALUE(result) TYPE abap_bool
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     METHODS to_typekind
       RETURNING
@@ -200,6 +199,7 @@ CLASS zcl_convert DEFINITION PUBLIC CREATE PUBLIC.
         !is_long      TYPE abap_bool DEFAULT abap_false
       RETURNING
         VALUE(result) TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -217,7 +217,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_convert IMPLEMENTATION.
+CLASS /apmg/cl_convert IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -240,7 +240,7 @@ CLASS zcl_convert IMPLEMENTATION.
   METHOD from.
 
     GET REFERENCE OF data INTO data_ref.
-    typekind = cl_abap_typedescr=>describe_by_data_ref( data_ref )->type_kind.
+    typekind = cl_abap_typedescr=>describe_by_data( data )->type_kind.
 
     result = me.
 
@@ -280,7 +280,7 @@ CLASS zcl_convert IMPLEMENTATION.
         result = xsdbool( <data> IS NOT INITIAL ).
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'bool' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'bool' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -311,15 +311,15 @@ CLASS zcl_convert IMPLEMENTATION.
             DATA(string_data) = to_string( ).
             result = string_data.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'char' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'char' ).
         ENDTRY.
 
         IF condense( result ) <> condense( string_data ).
-          RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = 'Data is longer than target variable'.
+          RAISE EXCEPTION TYPE cx_sy_conversion_overflow EXPORTING value = string_data.
         ENDIF.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'char' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'char' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -338,7 +338,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV d( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'date' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_packed.
@@ -346,11 +346,11 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             CONVERT TIME STAMP <data> TIME ZONE timezone INTO DATE result.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'date' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'date' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -362,7 +362,7 @@ CLASS zcl_convert IMPLEMENTATION.
         DATA(decfloat34) = to_decfloat34( ).
         result = CONV decfloat16( decfloat34 ).
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'decfloat16' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat16' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -388,7 +388,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV decfloat34( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -403,11 +403,11 @@ CLASS zcl_convert IMPLEMENTATION.
             DATA(string_data) = to_string( ).
             result = CONV decfloat34( string_data ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -421,14 +421,15 @@ CLASS zcl_convert IMPLEMENTATION.
     TYPES ty_ms TYPE n LENGTH 3.
 
     IF millisec < 0 OR millisec > 999.
-      RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = 'Milliseconds must be between 0 and 999'.
+      " Milliseconds must be between 0 and 999
+      RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'epoch' ).
     ENDIF.
 
     TRY.
         DATA(ms) = CONV ty_ms( millisec ).
         result = to_unixtime( ) && ms.
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'epoch' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'epoch' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -454,7 +455,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV f( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'float' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -469,11 +470,11 @@ CLASS zcl_convert IMPLEMENTATION.
             DATA(string_data) = to_string( ).
             result = CONV f( string_data ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'float' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'float' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -485,11 +486,11 @@ CLASS zcl_convert IMPLEMENTATION.
         DATA(xstring_data) = to_xstring( ).
         result = xstring_data.
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'hex' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
     ENDTRY.
 
     IF result <> xstring_data.
-      RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = 'Data is longer than target variable'.
+      RAISE EXCEPTION TYPE cx_sy_conversion_overflow EXPORTING value = 'any'.
     ENDIF.
 
   ENDMETHOD.
@@ -501,7 +502,7 @@ CLASS zcl_convert IMPLEMENTATION.
         DATA(int8) = to_int8( ).
         result = CONV i( int8 ).
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'integer' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'integer' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -529,7 +530,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV int8( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'int8' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'int8' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -542,11 +543,11 @@ CLASS zcl_convert IMPLEMENTATION.
             DATA(string_data) = to_string( ).
             result = CONV int8( string_data ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'int8' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'int8' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'int8' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'int8' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -562,7 +563,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
         result = |{ timestampl TIMESTAMP = ISO }|.
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'isotime' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -590,7 +591,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = <data>.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'packed' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'packed' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -605,11 +606,11 @@ CLASS zcl_convert IMPLEMENTATION.
             DATA(string_data) = to_string( ).
             result = string_data.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'packed' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'packed' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'packed' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'packed' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -645,7 +646,7 @@ CLASS zcl_convert IMPLEMENTATION.
             result = CONV string( <data> ).
             " FIXME? Might have a trailing space. Should we trim it?
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'string' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_hex
@@ -668,9 +669,7 @@ CLASS zcl_convert IMPLEMENTATION.
               RECEIVING
                 rv_string  = result.
           CATCH cx_root INTO DATA(error).
-            RAISE EXCEPTION TYPE zcx_error_text
-              EXPORTING
-                text = _conversion_error( 'string' ) && error->get_text( ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_table.
@@ -684,11 +683,11 @@ CLASS zcl_convert IMPLEMENTATION.
               table = <table>
               sep   = cl_abap_char_utilities=>newline ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'string' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'string' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
     ENDCASE.
 
     IF options-trim_strings = abap_true.
@@ -712,11 +711,11 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV t( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'time' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'time' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -728,11 +727,11 @@ CLASS zcl_convert IMPLEMENTATION.
         DATA(timestampl) = to_timestampl( timezone ).
         DATA(frac) = frac( timestampl ).
         IF frac <> 0.
-          RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
+          RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
         ENDIF.
         result = timestampl ##TYPE.
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -751,7 +750,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV timestampl( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_date.
@@ -759,7 +758,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             CONVERT DATE <data> INTO TIME STAMP result TIME ZONE timezone.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_utclong.
@@ -767,11 +766,11 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = cl_abap_tstmp=>utclong2tstmp( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -815,7 +814,7 @@ CLASS zcl_convert IMPLEMENTATION.
 
         result = condense( CONV string( unixtime ) ).
       CATCH cx_root.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'unixtime' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'unixtime' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -836,7 +835,7 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             result = CONV utclong( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'utclong' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_date.
@@ -844,11 +843,11 @@ CLASS zcl_convert IMPLEMENTATION.
         TRY.
             CONVERT DATE <data> TIME t TIME ZONE timezone INTO UTCLONG result.
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'utclong' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'utclong' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
     ENDCASE.
 
   ENDMETHOD.
@@ -866,15 +865,14 @@ CLASS zcl_convert IMPLEMENTATION.
         OR cl_abap_typedescr=>typekind_xstring.
 
         IF encoding IS NOT INITIAL.
-          RAISE EXCEPTION TYPE zcx_error_text
-            EXPORTING
-              text = 'Cannot convert encoding since data is already in hex format'.
+          " Cannot convert encoding since data is already in hex format
+          RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
         ENDIF.
 
         TRY.
             result = CONV xstring( <data> ).
           CATCH cx_root.
-            RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'xstring' ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -910,13 +908,11 @@ CLASS zcl_convert IMPLEMENTATION.
               RECEIVING
                 rv_xstring = result.
           CATCH cx_root INTO DATA(error).
-            RAISE EXCEPTION TYPE zcx_error_text
-              EXPORTING
-                text = _conversion_error( 'xstring' ) && error->get_text( ).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
         ENDTRY.
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_error_text EXPORTING text = _conversion_error( 'xstring' ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
     ENDCASE.
 
   ENDMETHOD.
