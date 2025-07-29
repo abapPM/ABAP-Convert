@@ -238,13 +238,13 @@
     <item>
      <ID>I</ID>
      <KEY>105</KEY>
-     <ENTRY>decimal loating point number</ENTRY>
+     <ENTRY>decimal floating point number</ENTRY>
      <LENGTH>50</LENGTH>
     </item>
     <item>
      <ID>I</ID>
      <KEY>106</KEY>
-     <ENTRY>decimal loating point number with 16 places</ENTRY>
+     <ENTRY>decimal floating point number with 16 places</ENTRY>
      <LENGTH>50</LENGTH>
     </item>
     <item>

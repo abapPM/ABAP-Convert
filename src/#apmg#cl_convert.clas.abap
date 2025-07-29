@@ -315,7 +315,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         ENDTRY.
 
         IF condense( result ) <> condense( string_data ).
-          RAISE EXCEPTION TYPE cx_sy_conversion_overflow EXPORTING value = string_data.
+          RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'char' ).
         ENDIF.
 
       WHEN OTHERS.
@@ -668,7 +668,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
                 iv_xstring = xstring_data
               RECEIVING
                 rv_string  = result.
-          CATCH cx_root INTO DATA(error).
+          CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
         ENDTRY.
 
@@ -907,7 +907,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
                 iv_string  = string_data
               RECEIVING
                 rv_xstring = result.
-          CATCH cx_root INTO DATA(error).
+          CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
         ENDTRY.
 
