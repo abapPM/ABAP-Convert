@@ -1,16 +1,18 @@
 {
-  "name": "xxx",
+  "name": "convert",
   "version": "1.0.0",
-  "description": "XXX",
+  "description": "Convert any data type",
   "type": "module",
   "keywords": [
     "abap",
     "apm",
-    "module"
+    "module",
+    "conversion",
+    "data types"
   ],
   "homepage": "https://abappm.com",
   "bugs": {
-    "url": "https://github.com/abapPM/ABAP-XXX"
+    "url": "https://github.com/abapPM/ABAP-Convert"
   },
   "license": "MIT",
   "author": {
@@ -26,7 +28,7 @@
     }
   ],
   "repository": {
-    "url": "https://github.com/abapPM/ABAP-XXX"
+    "url": "https://github.com/abapPM/ABAP-Convert"
   },
   "funding": {
     "type": "github",

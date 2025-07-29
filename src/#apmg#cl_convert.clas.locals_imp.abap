@@ -13,13 +13,13 @@ CLASS lcl_utils DEFINITION.
       IMPORTING
         !encoding TYPE string
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     CLASS-METHODS validate_timezone
       IMPORTING
         !timezone TYPE string
       RAISING
-        zcx_error.
+        /apmg/cx_error.
 
     CLASS-METHODS is_timestamp
       IMPORTING
@@ -53,13 +53,13 @@ CLASS lcl_utils IMPLEMENTATION.
         ENDIF.
       WHEN cl_abap_typedescr=>typekind_decfloat.
         IF is_long = abap_true.
-          result = 'decimal loating point number'(105).
+          result = 'decimal floating point number'(105).
         ELSE.
           result = 'decfloat'(005).
         ENDIF.
       WHEN cl_abap_typedescr=>typekind_decfloat16.
         IF is_long = abap_true.
-          result = 'decimal loating point number with 16 places'(106).
+          result = 'decimal floating point number with 16 places'(106).
         ELSE.
           result = 'decfloat16'(006).
         ENDIF.
@@ -178,16 +178,16 @@ CLASS lcl_utils IMPLEMENTATION.
   METHOD validate_encoding.
 
     CASE encoding.
-      WHEN zcl_convert=>c_encoding-ascii
-        OR zcl_convert=>c_encoding-utf_8
-        OR zcl_convert=>c_encoding-utf_16_be
-        OR zcl_convert=>c_encoding-utf_16_le
-        OR zcl_convert=>c_encoding-utf_32_be
-        OR zcl_convert=>c_encoding-utf_32_le
+      WHEN /apmg/cl_convert=>c_encoding-ascii
+        OR /apmg/cl_convert=>c_encoding-utf_8
+        OR /apmg/cl_convert=>c_encoding-utf_16_be
+        OR /apmg/cl_convert=>c_encoding-utf_16_le
+        OR /apmg/cl_convert=>c_encoding-utf_32_be
+        OR /apmg/cl_convert=>c_encoding-utf_32_le
         OR ''.
         RETURN.
       WHEN OTHERS.
-        zcx_error=>raise( |Invalid encoding: { encoding }| ).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Unkown encoding: { encoding }|.
     ENDCASE.
 
   ENDMETHOD.
@@ -197,7 +197,7 @@ CLASS lcl_utils IMPLEMENTATION.
     SELECT COUNT(*) FROM ttzz INTO @DATA(count)
       WHERE tzone = @timezone AND flagactive = @abap_true.
     IF count <> 1.
-      zcx_error=>raise( |Invalid timezone: { timezone }| ).
+      RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Too many timezones|.
     ENDIF.
 
   ENDMETHOD.

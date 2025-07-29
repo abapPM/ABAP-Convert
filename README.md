@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/endpoint?url=https://shield.abappm.com/github/abapPM/ABAP-Convert/src/zcl_convert.clas.abap/c_version&label=Version&color=blue)
+![Version](https://img.shields.io/endpoint?url=https://shield.abappm.com/github/abapPM/ABAP-Convert/src/%2523apmg%2523cl_convert.clas.abap/c_version&label=Version&color=blue)
 
 [![License](https://img.shields.io/github/license/abapPM/ABAP-Convert?label=License&color=success)](https://github.com/abapPM/ABAP-Convert/blob/main/LICENSE)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?color=success)](https://github.com/abapPM/.github/blob/main/CODE_OF_CONDUCT.md)
@@ -6,27 +6,27 @@
 
 # Convert Any Data Type
 
-The last class you will need to convert between data types. Well, that's the goal 😁
+The last class you will ever need to convert between data types. Well, that's the goal 😁
 
-Do you remember how to convert a string to an xstring? How about an ABAP timestamp to Unixtime? Or a string to a CHAR with overflow check? Don't recall the syntax for the right string template to convert a timestamp to an ISO date? 🤔
+Do you remember how to convert a string to an xstring? How about converting an ABAP timestamp to Unix time? Or a string to a CHAR with overflow check? Do you recall the syntax for the correct string template to convert a timestamp to an ISO date? 🤔
 
 Look no further and use this class 😄
 
 NO WARRANTIES, [MIT License](https://github.com/abapPM/ABAP-Convert/blob/main/LICENSE)
 
 > [!NOTE]
-> It might make sense to move various date/time conversions into a separate "Temporal" object like in [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal). Open an issue to discuss if you're interested!
+> It might make sense to move various date/time conversions into a separate "Temporal" object, like in [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal). Open an issue to discuss if you're interested!
 
 ## Usage
 
 Create an instance with the source value and use one of the methods to get the target value.
 
 ```abap
-DATA(str) = NEW zcl_convert( value )->to_string( ).
+DATA(str) = NEW /apmg/cl_convert( value )->to_string( ).
 " or
-DATA(str) = zcl_convert=>create( value )->to_string( ).
+DATA(str) = /apmg/cl_convert=>create( value )->to_string( ).
 " or
-DATA(conv) = NEW zcl_convert( ).
+DATA(conv) = NEW /apmg/cl_convert( ).
 DATA(str) = conv->from( value )->to_string( ).
 ```
 
@@ -56,13 +56,13 @@ Method | Description
 
 `^` All date/time conversions include `timezone` as an optional parameter (default `UTC`).
 
-`*` String and xstring conversions include `encodinng` (default `UTF8`) and `ignore_errors` as optional parameters.
+`*` String and xstring conversions include `encoding` (default `UTF8`) and `ignore_errors` as optional parameters.
 
 Constructor options:
 
 Option | Description
 -------|------------
-`trim_strings` | Remove trailing spaces when convertin to string (including intermediate conversions)
+`trim_strings` | Remove trailing spaces when converting to string (including intermediate conversions)
 
 ## Prerequisites
 
@@ -82,7 +82,7 @@ All contributions are welcome! Read our [Contribution Guidelines](https://github
 
 You can install the developer version of ABAP CONVERT using [abapGit](https://github.com/abapGit/abapGit) either by creating a new online repository for `https://github.com/abapPM/ABAP-Convert`.
 
-Recommended SAP package: `$CONVERT`
+Recommended SAP package: `/APMG/CONVERT`
 
 ## About
 
@@ -90,4 +90,4 @@ Made with ❤ in Canada
 
 Copyright 2025 apm.to Inc. <https://apm.to>
 
-Follow [@marcf.be](https://bsky.app/profile/marcf.be) on Blueksy and [@marcfbe](https://linkedin.com/in/marcfbe) or LinkedIn
+Follow [@marcf.be](https://bsky.app/profile/marcf.be) on Bluesky and [@marcfbe](https://linkedin.com/in/marcfbe) or LinkedIn
