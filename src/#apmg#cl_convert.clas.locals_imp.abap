@@ -187,10 +187,7 @@ CLASS lcl_utils IMPLEMENTATION.
         OR ''.
         RETURN.
       WHEN OTHERS.
-*        RAISE EXCEPTION TYPE /apmg/cx_error
-*          EXPORTING
-*            src = '<encoding>'
-*            dst = encoding.
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Unkown encoding: { encoding }|.
     ENDCASE.
 
   ENDMETHOD.
@@ -200,10 +197,7 @@ CLASS lcl_utils IMPLEMENTATION.
     SELECT COUNT(*) FROM ttzz INTO @DATA(count)
       WHERE tzone = @timezone AND flagactive = @abap_true.
     IF count <> 1.
-*      RAISE EXCEPTION TYPE /apmg/cx_error
-*        EXPORTING
-*          src = '<timezone>'
-*          dst = timezone.
+      RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Too many timezones|.
     ENDIF.
 
   ENDMETHOD.
