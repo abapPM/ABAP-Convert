@@ -490,7 +490,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     ENDTRY.
 
     IF result <> xstring_data.
-      RAISE EXCEPTION TYPE cx_sy_conversion_overflow EXPORTING value = 'any'.
+      RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
     ENDIF.
 
   ENDMETHOD.
