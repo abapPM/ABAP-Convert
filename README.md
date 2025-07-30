@@ -80,7 +80,7 @@ Specify the `convert` module as a dependency in your project and import it to yo
 
 All contributions are welcome! Read our [Contribution Guidelines](https://github.com/abapPM/ABAP-Convert/blob/main/CONTRIBUTING.md), fork this repo, and create a pull request.
 
-You can install the developer version of ABAP CONVERT using [abapGit](https://github.com/abapGit/abapGit) either by creating a new online repository for `https://github.com/abapPM/ABAP-Convert`.
+You can install the developer version of ABAP Convert using [abapGit](https://github.com/abapGit/abapGit) either by creating a new online repository for `https://github.com/abapPM/ABAP-Convert`.
 
 Recommended SAP package: `/APMG/CONVERT`
 
