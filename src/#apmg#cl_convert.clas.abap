@@ -8,6 +8,7 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 ************************************************************************
 
   " TODO!: Add test cases for 100% coverage
+  " TODO: Replace cx_root with more specific exceptions
   " FUTURE: Add to_codepage conversions CL_ABAP_CODEPAGE
 
   PUBLIC SECTION.
@@ -723,9 +724,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD to_timestamp.
 
+    TYPES ty_frac TYPE p LENGTH 10 DECIMALS 6.
+
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
-        DATA(frac) = frac( timestampl ).
+        DATA(frac) = CONV ty_frac( frac( timestampl ) ).
         IF frac <> 0.
           RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
         ENDIF.
