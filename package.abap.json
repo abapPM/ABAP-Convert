@@ -6,9 +6,9 @@
   "keywords": [
     "abap",
     "apm",
-    "module",
     "conversion",
-    "data types"
+    "data types",
+    "module"
   ],
   "homepage": "https://abappm.com",
   "bugs": {
