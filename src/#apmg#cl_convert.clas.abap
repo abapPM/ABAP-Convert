@@ -428,7 +428,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
     TRY.
         DATA(ms) = CONV ty_ms( millisec ).
-        result = to_unixtime( ) && ms.
+        result = to_unixtime( timezone ) && ms.
       CATCH cx_root.
         RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'epoch' ).
     ENDTRY.
@@ -556,13 +556,28 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD to_isotime.
 
-    " YYYY-MM-DDThh:mm:ssZ format
+    " YYYY-MM-DDThh:mm:ss format
     " https://en.m.wikipedia.org/wiki/ISO_8601
 
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
+        CONVERT TIME STAMP timestampl TIME ZONE timezone INTO DATE DATA(date) TIME DATA(time).
 
-        result = |{ timestampl TIMESTAMP = ISO }|.
+        result = |{ date+0(4) }-{ date+4(2) }-{ date+6(2) }T{ time+0(2) }:{ time+2(2) }:{ time+4(2) }|.
+
+        DATA(fraction) = frac( timestampl ).
+        IF fraction <> 0.
+          DATA(fraction_text) = |{ fraction DECIMALS = 7 }|.
+          REPLACE FIRST OCCURRENCE OF ',' IN fraction_text WITH '.'.
+          FIND FIRST OCCURRENCE OF '.' IN fraction_text MATCH OFFSET DATA(offset).
+          IF sy-subrc <> 0.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
+          ENDIF.
+
+          DATA(fraction_offset) = offset + 1.
+
+          result = result && `.` && fraction_text+fraction_offset.
+        ENDIF.
       CATCH cx_root.
         RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
     ENDTRY.
@@ -706,11 +721,23 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     CASE typekind.
       WHEN cl_abap_typedescr=>typekind_char
         OR cl_abap_typedescr=>typekind_num
-        OR cl_abap_typedescr=>typekind_string
-        OR cl_abap_typedescr=>typekind_time.
+        OR cl_abap_typedescr=>typekind_string.
 
         TRY.
-            result = CONV t( <data> ).
+            DATA(time_text) = to_string( ).
+            WHILE strlen( time_text ) < 6.
+              time_text = `0` && time_text.
+            ENDWHILE.
+
+            result = CONV t( time_text ).
+          CATCH cx_root.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_time.
+
+        TRY.
+            result = <data>.
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
         ENDTRY.
@@ -806,14 +833,12 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         CONVERT TIME STAMP timestamp_long TIME ZONE timezone INTO DATE DATA(date) TIME DATA(time).
 
         " Timestamp for passed days until today in seconds
-        DATA(days_i)          = CONV i( date - '19700101' ).
-        DATA(days_timestamp)  = CONV timestampl( days_i * 60 * 60 * 24 ).
+        DATA(days_i) = CONV int8( date - '19700101' ).
 
         " Timestamp for time at present day
-        DATA(sec_i)           = CONV i( time ).
-        DATA(secs_timestamp)  = CONV timestampl( sec_i ).
+        DATA(sec_i) = CONV int8( time ).
 
-        DATA(unixtime) = CONV timestampl( days_timestamp + secs_timestamp ).
+        DATA(unixtime) = days_i * 60 * 60 * 24 + sec_i.
 
         result = condense( CONV string( unixtime ) ).
       CATCH cx_root.
@@ -836,7 +861,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_packed.
 
         TRY.
-            result = CONV utclong( <data> ).
+            result = cl_abap_tstmp=>tstmp2utclong( <data> ).
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
         ENDTRY.
