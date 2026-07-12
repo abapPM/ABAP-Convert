@@ -378,74 +378,588 @@ CLASS ltcl_convert IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD to_bool.
-    ASSERT 0 = 0.
+
+    DATA empty TYPE string.
+
+    cl_abap_unit_assert=>assert_false( c->to_bool( ) ).
+    cl_abap_unit_assert=>assert_false( /apmg/cl_convert=>create( empty )->to_bool( ) ).
+
+    cl_abap_unit_assert=>assert_true( i->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( i8->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( f->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( d16->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( d34->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( p->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( n->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( str->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( d->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( t->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( x->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( xstr->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( timestamp->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( timestampl->to_bool( ) ).
+    cl_abap_unit_assert=>assert_true( utclong->to_bool( ) ).
+
   ENDMETHOD.
 
   METHOD to_date.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_date( )
+      exp = c_test-d ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_date->to_date( )
+      exp = c_test-d ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_date( )
+      exp = '20010203' ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestampl->to_date( )
+      exp = '20010203' ).
+
+    TRY.
+        i->to_date( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_decfloat16.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_decfloat16( )
+      exp = CONV decfloat16( c_test-i ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i8->to_decfloat16( )
+      exp = CONV decfloat16( c_test-i8 ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = f->to_decfloat16( )
+      exp = CONV decfloat16( c_test-f ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d16->to_decfloat16( )
+      exp = c_test-d16 ).
+
+    TRY.
+        d34->to_decfloat16( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = p->to_decfloat16( )
+      exp = CONV decfloat16( c_test-p ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = c_number->to_decfloat16( )
+      exp = CONV decfloat16( c_test-c_number ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = n->to_decfloat16( )
+      exp = CONV decfloat16( c_test-n ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_number->to_decfloat16( )
+      exp = CONV decfloat16( c_test-str_number ) ).
+
+    TRY.
+        str->to_decfloat16( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_decfloat34.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_decfloat34( )
+      exp = CONV decfloat34( c_test-i ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i8->to_decfloat34( )
+      exp = CONV decfloat34( c_test-i8 ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = f->to_decfloat34( )
+      exp = CONV decfloat34( c_test-f ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d16->to_decfloat34( )
+      exp = CONV decfloat34( c_test-d16 ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d34->to_decfloat34( )
+      exp = c_test-d34 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = p->to_decfloat34( )
+      exp = CONV decfloat34( c_test-p ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_float->to_decfloat34( )
+      exp = CONV decfloat34( c_test-str_float ) ).
+
+    TRY.
+        str->to_decfloat34( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_epoch.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_epoch( )
+      exp = `981203696000` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_epoch( millisec = 123 )
+      exp = `981203696123` ).
+
+    TRY.
+        timestamp->to_epoch( millisec = -1 ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    TRY.
+        timestamp->to_epoch( millisec = 1000 ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_float.
-    ASSERT 0 = 0.
+
+    DATA exp TYPE f.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_float( )
+      exp = CONV f( c_test-i ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i8->to_float( )
+      exp = CONV f( c_test-i8 ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = f->to_float( )
+      exp = c_test-f ).
+
+    TRY.
+        d16->to_float( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    TRY.
+        d34->to_float( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = p->to_float( )
+      exp = CONV f( c_test-p ) ).
+
+    exp = c_test-str_float.
+    cl_abap_unit_assert=>assert_equals(
+      act = str_float->to_float( )
+      exp = exp ).
+
+    TRY.
+        str->to_float( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_hex.
-    ASSERT 0 = 0.
+
+    DATA act TYPE x LENGTH 7.
+
+    str->to_hex( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = '6D617263666265' ).
+
+    xstr->to_hex( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = c_test-xstr ).
+
+    TRY.
+        x->to_hex( CHANGING result = act ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_int8.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_int8( )
+      exp = CONV int8( c_test-i ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i8->to_int8( )
+      exp = c_test-i8 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = f->to_int8( )
+      exp = CONV int8( '12340000000' ) ).
+
+    TRY.
+        d16->to_int8( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    TRY.
+        d34->to_int8( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = p->to_int8( )
+      exp = 123457 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = c_number->to_int8( )
+      exp = 12345678 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = n->to_int8( )
+      exp = 14 ).
+
+    TRY.
+        str->to_int8( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_number->to_int8( )
+      exp = 123456789 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_int8( )
+      exp = 738486 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = t->to_int8( )
+      exp = 45296 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = x->to_int8( )
+      exp = 1298231907 ).
+
+    TRY.
+        xstr->to_int8( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_isotime.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_isotime( )
+      exp = `2001-02-03T12:34:56` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestampl->to_isotime( )
+      exp = `2001-02-03T12:34:56.7890000` ).
+
+    TRY.
+        str->to_isotime( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_packed.
-    ASSERT 0 = 0.
+
+    DATA act TYPE p LENGTH 16 DECIMALS 10.
+    DATA exp TYPE p LENGTH 16 DECIMALS 10.
+
+    i->to_packed( CHANGING result = act ).
+    exp = c_test-i.
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = exp ).
+
+    i8->to_packed( CHANGING result = act ).
+    exp = c_test-i8.
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = exp ).
+
+    f->to_packed( CHANGING result = act ).
+    exp = c_test-f.
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = exp ).
+
+    p->to_packed( CHANGING result = act ).
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = c_test-p ).
+
+    c_number->to_packed( CHANGING result = act ).
+    exp = c_test-c_number.
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = exp ).
+
+    str_number->to_packed( CHANGING result = act ).
+    exp = c_test-str_number.
+    cl_abap_unit_assert=>assert_equals(
+      act = act
+      exp = exp ).
+
+    TRY.
+        str->to_packed( CHANGING result = act ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_time.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = t->to_time( )
+      exp = c_test-t ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_time->to_time( )
+      exp = c_test-t ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = n->to_time( )
+      exp = '000014' ).
+
+    TRY.
+        i->to_time( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_timestamp.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_timestamp( )
+      exp = c_test-timestamp ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_timestamp( )
+      exp = '20221126000000' ).
+
+    TRY.
+        timestampl->to_timestamp( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_timestampl.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_timestampl( )
+      exp = CONV timestampl( c_test-timestamp ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestampl->to_timestampl( )
+      exp = c_test-timestampl ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_timestampl( )
+      exp = CONV timestampl( '20221126000000' ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = utclong->to_timestampl( )
+      exp = CONV timestampl( '19720601123456.7890120' ) ).
+
+    TRY.
+        str_timestamp->to_timestampl( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_typekind.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_int ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i8->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_int8 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = f->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_float ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d16->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_decfloat16 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d34->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_decfloat34 ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = p->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_packed ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = c->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_char ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = n->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_num ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_string ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_date ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = t->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_time ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = x->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_hex ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = xstr->to_typekind( )
+      exp = cl_abap_typedescr=>typekind_xstring ).
+
   ENDMETHOD.
 
   METHOD to_typetext.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_typetext( )
+      exp = `integer` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = i->to_typetext( abap_true )
+      exp = `4-byte integer` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = c->to_typetext( )
+      exp = `character` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = c->to_typetext( abap_true )
+      exp = `text field` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str->to_typetext( )
+      exp = `string` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str->to_typetext( abap_true )
+      exp = `text string` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = xstr->to_typetext( )
+      exp = `xstring` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = utclong->to_typetext( )
+      exp = `timestamp` ).
+
   ENDMETHOD.
 
   METHOD to_unixtime.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_unixtime( )
+      exp = `981203696` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestampl->to_unixtime( )
+      exp = `981203696` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = utclong->to_unixtime( )
+      exp = `76250096` ).
+
+    TRY.
+        str_timestamp->to_unixtime( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_utclong.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestamp->to_utclong( )
+      exp = CONV utclong( c_test-timestamp ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = timestampl->to_utclong( )
+      exp = CONV utclong( c_test-timestampl ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = d->to_utclong( )
+      exp = CONV utclong( `2022-11-26 00:00:00.0000000` ) ).
+
+    TRY.
+        str_timestamp->to_utclong( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 
   METHOD to_xstring.
-    ASSERT 0 = 0.
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str->to_xstring( )
+      exp = CONV xstring( '6D617263666265' ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = x->to_xstring( encoding = '' )
+      exp = c_test-x ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = xstr->to_xstring( encoding = '' )
+      exp = c_test-xstr ).
+
+    TRY.
+        x->to_xstring( ).
+        cl_abap_unit_assert=>fail( ).
+      CATCH /apmg/cx_error.
+    ENDTRY.
+
   ENDMETHOD.
 ENDCLASS.
