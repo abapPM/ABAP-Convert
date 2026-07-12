@@ -14,6 +14,8 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
         c              TYPE c LENGTH 3 VALUE 'abc',
         c_number       TYPE c LENGTH 10 VALUE '12345678',
         n              TYPE n LENGTH 5 VALUE '00014',
+        n_date         TYPE n LENGTH 8 VALUE '20221126',
+        n_time         TYPE n LENGTH 6 VALUE '123456',
         str            TYPE string VALUE 'marcfbe',
         str_number     TYPE string VALUE '123456789',
         str_float      TYPE string VALUE '1234.5678E90',
@@ -24,6 +26,7 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
         d              TYPE d VALUE '20221126',
         t              TYPE t VALUE '123456',
         x              TYPE x LENGTH 4 VALUE '4D617263',
+        x_str          TYPE x LENGTH 7 VALUE '4265726E617264',
         xstr           TYPE xstring VALUE '4265726E617264',
         timestamp      TYPE timestamp VALUE '20010203123456',
         timestampl     TYPE timestampl VALUE '20010203123456.789',
@@ -47,6 +50,8 @@ CLASS ltcl_convert DEFINITION FOR TESTING RISK LEVEL HARMLESS
       c              TYPE REF TO /apmg/cl_convert,
       c_number       TYPE REF TO /apmg/cl_convert,
       n              TYPE REF TO /apmg/cl_convert,
+      n_date         TYPE REF TO /apmg/cl_convert,
+      n_time         TYPE REF TO /apmg/cl_convert,
       str            TYPE REF TO /apmg/cl_convert,
       str_number     TYPE REF TO /apmg/cl_convert,
       str_float      TYPE REF TO /apmg/cl_convert,
@@ -100,6 +105,8 @@ CLASS ltcl_convert IMPLEMENTATION.
     c              = NEW #( c_test-c ).
     c_number       = NEW #( c_test-c_number ).
     n              = NEW #( c_test-n ).
+    n_date         = NEW #( c_test-n_date ).
+    n_time         = NEW #( c_test-n_time ).
     str            = NEW #( c_test-str ).
     str_number     = NEW #( c_test-str_number ).
     str_float      = NEW #( c_test-str_float ).
@@ -409,6 +416,10 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = c_test-d ).
 
     cl_abap_unit_assert=>assert_equals(
+      act = n_date->to_date( )
+      exp = c_test-d ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = str_date->to_date( )
       exp = c_test-d ).
 
@@ -419,6 +430,10 @@ CLASS ltcl_convert IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals(
       act = timestampl->to_date( )
       exp = '20010203' ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = utclong->to_date( )
+      exp = '19720601' ).
 
     TRY.
         i->to_date( ).
@@ -595,7 +610,7 @@ CLASS ltcl_convert IMPLEMENTATION.
     xstr->to_hex( CHANGING result = act ).
     cl_abap_unit_assert=>assert_equals(
       act = act
-      exp = c_test-xstr ).
+      exp = c_test-x_str ).
 
     TRY.
         x->to_hex( CHANGING result = act ).
@@ -677,11 +692,11 @@ CLASS ltcl_convert IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals(
       act = timestamp->to_isotime( )
-      exp = `2001-02-03T12:34:56` ).
+      exp = `2001-02-03T12:34:56,0000000` ).
 
     cl_abap_unit_assert=>assert_equals(
       act = timestampl->to_isotime( )
-      exp = `2001-02-03T12:34:56.7890000` ).
+      exp = `2001-02-03T12:34:56,7890000` ).
 
     TRY.
         str->to_isotime( ).
@@ -750,8 +765,8 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = c_test-t ).
 
     cl_abap_unit_assert=>assert_equals(
-      act = n->to_time( )
-      exp = '000014' ).
+      act = n_time->to_time( )
+      exp = c_test-t ).
 
     TRY.
         i->to_time( ).
@@ -795,7 +810,7 @@ CLASS ltcl_convert IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals(
       act = utclong->to_timestampl( )
-      exp = CONV timestampl( '19720601123456.7890120' ) ).
+      exp = CONV timestampl( '19720601123456.7890123' ) ).
 
     TRY.
         str_timestamp->to_timestampl( ).
@@ -923,11 +938,11 @@ CLASS ltcl_convert IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals(
       act = timestamp->to_utclong( )
-      exp = CONV utclong( c_test-timestamp ) ).
+      exp = CONV utclong( `2001-02-03 12:34:56.0000000` ) ).
 
     cl_abap_unit_assert=>assert_equals(
       act = timestampl->to_utclong( )
-      exp = CONV utclong( c_test-timestampl ) ).
+      exp = CONV utclong( `2001-02-03 12:34:56.7890000` ) ).
 
     cl_abap_unit_assert=>assert_equals(
       act = d->to_utclong( )

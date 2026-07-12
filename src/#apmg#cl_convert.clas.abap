@@ -135,8 +135,10 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
         /apmg/cx_error.
 
     METHODS to_hex
+      IMPORTING
+        !encoding TYPE string DEFAULT c_encoding-utf_8
       CHANGING
-        !result TYPE xsequence
+        !result   TYPE xsequence
       RAISING
         /apmg/cx_error.
 
@@ -334,6 +336,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     CASE typekind.
       WHEN cl_abap_typedescr=>typekind_date
         OR cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_num
         OR cl_abap_typedescr=>typekind_string.
 
         TRY.
@@ -346,6 +349,15 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             CONVERT TIME STAMP <data> TIME ZONE timezone INTO DATE result.
+          CATCH cx_root.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
+        ENDTRY.
+
+      WHEN cl_abap_typedescr=>typekind_utclong.
+
+        TRY.
+            DATA(timestampl) = to_timestampl( timezone ).
+            CONVERT TIME STAMP timestampl TIME ZONE timezone INTO DATE result.
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
         ENDTRY.
@@ -483,12 +495,30 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD to_hex.
 
-    TRY.
-        DATA(xstring_data) = to_xstring( ).
-        result = xstring_data.
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
-    ENDTRY.
+    CASE typekind.
+      WHEN cl_abap_typedescr=>typekind_hex
+        OR cl_abap_typedescr=>typekind_xstring.
+
+        TRY.
+            " No encoding
+            DATA(xstring_data) = to_xstring( encoding = '' ).
+            result = xstring_data.
+          CATCH cx_root.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
+        ENDTRY.
+
+
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_string.
+
+        TRY.
+            " With encoding
+            xstring_data = to_xstring( encoding = encoding ).
+            result = xstring_data.
+          CATCH cx_root.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
+        ENDTRY.
+    ENDCASE.
 
     IF result <> xstring_data.
       RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
@@ -556,28 +586,12 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD to_isotime.
 
-    " YYYY-MM-DDThh:mm:ss format
+    " yyyy-mm-ddThh:mm:ss,fffffff
     " https://en.m.wikipedia.org/wiki/ISO_8601
 
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
-        CONVERT TIME STAMP timestampl TIME ZONE timezone INTO DATE DATA(date) TIME DATA(time).
-
-        result = |{ date+0(4) }-{ date+4(2) }-{ date+6(2) }T{ time+0(2) }:{ time+2(2) }:{ time+4(2) }|.
-
-        DATA(fraction) = frac( timestampl ).
-        IF fraction <> 0.
-          DATA(fraction_text) = |{ fraction DECIMALS = 7 }|.
-          REPLACE FIRST OCCURRENCE OF ',' IN fraction_text WITH '.'.
-          FIND FIRST OCCURRENCE OF '.' IN fraction_text MATCH OFFSET DATA(offset).
-          IF sy-subrc <> 0.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
-          ENDIF.
-
-          DATA(fraction_offset) = offset + 1.
-
-          result = result && `.` && fraction_text+fraction_offset.
-        ENDIF.
+        result = |{ timestampl TIMESTAMP = ISO }|.
       CATCH cx_root.
         RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
     ENDTRY.
@@ -725,10 +739,6 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             DATA(time_text) = to_string( ).
-            WHILE strlen( time_text ) < 6.
-              time_text = `0` && time_text.
-            ENDWHILE.
-
             result = CONV t( time_text ).
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
