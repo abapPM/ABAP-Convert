@@ -947,16 +947,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
     TRY.
         DATA(timestamp_long) = to_timestampl( timezone ).
+        DATA(epoch)          = CONV timestampl( '19700101000000' ).
 
-        CONVERT TIME STAMP timestamp_long TIME ZONE timezone INTO DATE DATA(date) TIME DATA(time).
-
-        " Timestamp for passed days until today in seconds
-        DATA(days_i) = CONV int8( date - '19700101' ).
-
-        " Timestamp for time at present day
-        DATA(sec_i) = CONV int8( time ).
-
-        DATA(unixtime) = days_i * 60 * 60 * 24 + sec_i.
+        DATA(unixtime) = floor( cl_abap_tstmp=>subtract(
+          tstmp1 = timestamp_long
+          tstmp2 = epoch ) ).
 
         result = condense( CONV string( unixtime ) ).
       CATCH cx_root.
