@@ -949,7 +949,7 @@ CLASS ltcl_convert IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals(
       act = x->to_xstring( encoding = '' )
-      exp = c_test-x ).
+      exp = CONV xstring( c_test-x ) ).
 
     cl_abap_unit_assert=>assert_equals(
       act = xstr->to_xstring( encoding = '' )
