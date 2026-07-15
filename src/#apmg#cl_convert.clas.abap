@@ -7,7 +7,7 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 * SPDX-License-Identifier: MIT
 ************************************************************************
 
-  " TODO: Add test cases for 100% coverage
+  " TODO: Add test cases for 100% coverage and all possible type conversions
   " TODO: Replace cx_root with more specific exceptions
   " FUTURE: Add to_codepage conversions CL_ABAP_CODEPAGE
 
@@ -897,7 +897,10 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     ASSERT sy-subrc = 0.
 
     CASE typekind.
-      WHEN cl_abap_typedescr=>typekind_packed.
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_packed.
 
         TRY.
             result = CONV timestampl( <data> ).
@@ -976,10 +979,14 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     ASSERT sy-subrc = 0.
 
     CASE typekind.
-      WHEN cl_abap_typedescr=>typekind_packed.
+      WHEN cl_abap_typedescr=>typekind_char
+        OR cl_abap_typedescr=>typekind_num
+        OR cl_abap_typedescr=>typekind_string
+        OR cl_abap_typedescr=>typekind_packed.
 
         TRY.
-            result = cl_abap_tstmp=>tstmp2utclong( <data> ).
+            DATA(timestamp_long) = to_timestampl( timezone ).
+            result = cl_abap_tstmp=>tstmp2utclong( timestamp_long ).
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
         ENDTRY.

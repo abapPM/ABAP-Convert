@@ -783,6 +783,10 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = c_test-timestamp ).
 
     cl_abap_unit_assert=>assert_equals(
+      act = str_timestamp->to_timestampl( )
+      exp = c_test-timestamp ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = d->to_timestamp( )
       exp = '20221126000000' ).
 
@@ -805,18 +809,20 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = c_test-timestampl ).
 
     cl_abap_unit_assert=>assert_equals(
+      act = str_timestamp->to_timestampl( )
+      exp = CONV timestampl( c_test-timestamp ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_timestampl->to_timestampl( )
+      exp = c_test-timestampl ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = d->to_timestampl( )
       exp = CONV timestampl( '20221126000000' ) ).
 
     cl_abap_unit_assert=>assert_equals(
       act = utclong->to_timestampl( )
       exp = CONV timestampl( '19720601123456.7890123' ) ).
-
-    TRY.
-        str_timestamp->to_timestampl( ).
-        cl_abap_unit_assert=>fail( ).
-      CATCH /apmg/cx_error.
-    ENDTRY.
 
   ENDMETHOD.
 
@@ -923,14 +929,16 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = `981203696` ).
 
     cl_abap_unit_assert=>assert_equals(
+      act = str_timestamp->to_unixtime( )
+      exp = `981203696` ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_timestampl->to_unixtime( )
+      exp = `981203696` ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = utclong->to_unixtime( )
       exp = `76250096` ).
-
-    TRY.
-        str_timestamp->to_unixtime( ).
-        cl_abap_unit_assert=>fail( ).
-      CATCH /apmg/cx_error.
-    ENDTRY.
 
   ENDMETHOD.
 
@@ -945,14 +953,16 @@ CLASS ltcl_convert IMPLEMENTATION.
       exp = CONV utclong( `2001-02-03 12:34:56.7890000` ) ).
 
     cl_abap_unit_assert=>assert_equals(
+      act = str_timestamp->to_utclong( )
+      exp = CONV utclong( `2001-02-03 12:34:56.0000000` ) ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = str_timestampl->to_utclong( )
+      exp = CONV utclong( `2001-02-03 12:34:56.7890000` ) ).
+
+    cl_abap_unit_assert=>assert_equals(
       act = d->to_utclong( )
       exp = CONV utclong( `2022-11-26 00:00:00.0000000` ) ).
-
-    TRY.
-        str_timestamp->to_utclong( ).
-        cl_abap_unit_assert=>fail( ).
-      CATCH /apmg/cx_error.
-    ENDTRY.
 
   ENDMETHOD.
 

@@ -195,7 +195,7 @@ CLASS lcl_utils IMPLEMENTATION.
   METHOD validate_timezone.
 
     TRY.
-        DATA(tzone) = NEW cl_timezone( name = 'TEST' timezone = CONV timezone( timezone ) ).
+        DATA(tzone) = NEW cl_timezone( name = 'TEST' timezone = CONV timezone( timezone ) ) ##NEEDED.
       CATCH cx_root.
         RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = 'Invalid timezone'(036).
     ENDTRY.
