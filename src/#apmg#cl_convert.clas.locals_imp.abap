@@ -187,18 +187,18 @@ CLASS lcl_utils IMPLEMENTATION.
         OR ''.
         RETURN.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Unkown encoding: { encoding }|.
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = 'Unkown encoding'(038) && |: { encoding }|.
     ENDCASE.
 
   ENDMETHOD.
 
   METHOD validate_timezone.
 
-    SELECT COUNT(*) FROM ttzz INTO @DATA(count)
-      WHERE tzone = @timezone AND flagactive = @abap_true.
-    IF count <> 1.
-      RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = |Too many timezones|.
-    ENDIF.
+    TRY.
+        DATA(tzone) = NEW cl_timezone( name = 'TEST' timezone = CONV timezone( timezone ) ).
+      CATCH cx_root.
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = 'Invalid timezone'(036).
+    ENDTRY.
 
   ENDMETHOD.
 

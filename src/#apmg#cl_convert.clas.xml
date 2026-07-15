@@ -225,6 +225,24 @@
     </item>
     <item>
      <ID>I</ID>
+     <KEY>036</KEY>
+     <ENTRY>Invalid timezone</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>037</KEY>
+     <ENTRY>Unable to convert &amp;1 to &amp;2</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>038</KEY>
+     <ENTRY>Unkown encoding</ENTRY>
+     <LENGTH>50</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
      <KEY>101</KEY>
      <ENTRY>text field</ENTRY>
      <LENGTH>30</LENGTH>

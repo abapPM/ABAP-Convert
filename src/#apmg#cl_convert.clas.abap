@@ -7,7 +7,7 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 * SPDX-License-Identifier: MIT
 ************************************************************************
 
-  " TODO!: Add test cases for 100% coverage
+  " TODO: Add test cases for 100% coverage
   " TODO: Replace cx_root with more specific exceptions
   " FUTURE: Add to_codepage conversions CL_ABAP_CODEPAGE
 
@@ -27,116 +27,116 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
     CONSTANTS:
       BEGIN OF c_timezone,
-        afghanistan                         TYPE string VALUE 'AFGHAN',
-        alaska_aleutian                     TYPE string VALUE 'ALAW',
-        alaska_anchorage                    TYPE string VALUE 'ALA',
-        argentina                           TYPE string VALUE 'ART',
-        atlantic_time_halifax               TYPE string VALUE 'AST',
-        australia_eucla                     TYPE string VALUE 'AUSEUC',
-        australia_lord_howe_island          TYPE string VALUE 'AUSLHI',
-        australia_new_south_wales           TYPE string VALUE 'AUSNSW',
-        australia_northern_territories      TYPE string VALUE 'AUSNT',
-        australia_queensland                TYPE string VALUE 'AUSQLD',
-        australia_south_australia           TYPE string VALUE 'AUSSA',
-        australia_tasmania                  TYPE string VALUE 'AUSTAS',
-        australia_victoria                  TYPE string VALUE 'AUSVIC',
-        australia_western_australia         TYPE string VALUE 'AUSWA',
-        azerbaijan                          TYPE string VALUE 'AZT',
-        bangladesh                          TYPE string VALUE 'BDT',
-        brazil                              TYPE string VALUE 'BRAZIL',
-        brazil_andes                        TYPE string VALUE 'BRZLAN',
-        brazil_west                         TYPE string VALUE 'BRZLWE',
-        central_africa                      TYPE string VALUE 'CAT',
-        central_europe                      TYPE string VALUE 'CET',
-        central_time_dallas                 TYPE string VALUE 'CST',
-        central_time_no_dst                 TYPE string VALUE 'CSTNO',
-        central_time_north_america          TYPE string VALUE 'CST_NA',
-        chile                               TYPE string VALUE 'CHILE',
-        chile_easter_island                 TYPE string VALUE 'CHILEE',
-        chile_magallanes                    TYPE string VALUE 'CHILEM',
-        cyprus                              TYPE string VALUE 'CYPRUS',
-        eastern_europe                      TYPE string VALUE 'EET',
-        eastern_greenland                   TYPE string VALUE 'GSTE',
-        eastern_time_new_york               TYPE string VALUE 'EST',
-        eastern_time_north_america          TYPE string VALUE 'EST_NA',
-        egypt                               TYPE string VALUE 'EGYPT',
-        est_without_dst                     TYPE string VALUE 'ESTNO',
-        europe_azores                       TYPE string VALUE 'AZOREN',
-        falkland_islands                    TYPE string VALUE 'FLKLND',
-        greenland                           TYPE string VALUE 'GST',
-        greenwich_uk_with_dst               TYPE string VALUE 'GMTUK',
-        hawaii                              TYPE string VALUE 'HAW',
-        india                               TYPE string VALUE 'INDIA',
-        iran                                TYPE string VALUE 'IRAN',
-        iraq                                TYPE string VALUE 'IRAQ',
-        israel                              TYPE string VALUE 'ISRAEL',
-        japan                               TYPE string VALUE 'JAPAN',
-        jordan                              TYPE string VALUE 'JORDAN',
-        lebanon                             TYPE string VALUE 'LBANON',
-        mauritius                           TYPE string VALUE 'MAU',
-        morocco                             TYPE string VALUE 'MOROCC',
-        mountain_time_denver                TYPE string VALUE 'MST',
-        mountain_time_north_america         TYPE string VALUE 'MST_NA',
-        mountain_time_phoenix               TYPE string VALUE 'MSTNO',
-        nepal                               TYPE string VALUE 'NEPAL',
-        new_zealand                         TYPE string VALUE 'NZST',
-        new_zealand_chatham_islands         TYPE string VALUE 'NZCHA',
-        newfoundland                        TYPE string VALUE 'NST',
-        norfolk_islands                     TYPE string VALUE 'NORFLK',
-        pacific_time_los_angeles            TYPE string VALUE 'PST',
-        pakistan                            TYPE string VALUE 'PKT',
-        paraguay                            TYPE string VALUE 'PARAGY',
-        republic_of_fiji                    TYPE string VALUE 'FIJI',
-        republic_of_moldova                 TYPE string VALUE 'MOLDVA',
-        russia_msk                          TYPE string VALUE 'RUS03',
-        russia_msk_minus_01                 TYPE string VALUE 'RUS02',
-        russia_msk_plus_01                  TYPE string VALUE 'RUS04',
-        russia_msk_plus_02                  TYPE string VALUE 'RUS05',
-        russia_msk_plus_03                  TYPE string VALUE 'RUS06',
-        russia_msk_plus_04                  TYPE string VALUE 'RUS07',
-        russia_msk_plus_05                  TYPE string VALUE 'RUS08',
-        russia_msk_plus_06                  TYPE string VALUE 'RUS09',
-        russia_msk_plus_07                  TYPE string VALUE 'RUS10',
-        russia_msk_plus_08                  TYPE string VALUE 'RUS11',
-        russia_msk_plus_09                  TYPE string VALUE 'RUS12',
-        saint_minus_pierre_miquelon         TYPE string VALUE 'PIERRE',
-        syria                               TYPE string VALUE 'SYRIA',
-        turkey                              TYPE string VALUE 'TURKEY',
-        uruguay                             TYPE string VALUE 'URUGUA',
-        utc                                 TYPE string VALUE 'UTC',
-        utc_minus_01                        TYPE string VALUE 'UTC-1',
-        utc_minus_02                        TYPE string VALUE 'UTC-2',
-        utc_minus_03                        TYPE string VALUE 'UTC-3',
-        utc_minus_04                        TYPE string VALUE 'UTC-4',
-        utc_minus_05                        TYPE string VALUE 'UTC-5',
-        utc_minus_06                        TYPE string VALUE 'UTC-6',
-        utc_minus_07                        TYPE string VALUE 'UTC-7',
-        utc_minus_08                        TYPE string VALUE 'UTC-8',
-        utc_minus_09                        TYPE string VALUE 'UTC-9',
-        utc_minus_10                        TYPE string VALUE 'UTC-10',
-        utc_minus_11                        TYPE string VALUE 'UTC-11',
-        utc_minus_12                        TYPE string VALUE 'UTC-12',
-        utc_minus_13                        TYPE string VALUE 'UTC-13',
-        utc_minus_14                        TYPE string VALUE 'UTC-14',
-        utc_plus_01                         TYPE string VALUE 'UTC+1',
-        utc_plus_02                         TYPE string VALUE 'UTC+2',
-        utc_plus_03                         TYPE string VALUE 'UTC+3',
-        utc_plus_04                         TYPE string VALUE 'UTC+4',
-        utc_plus_05                         TYPE string VALUE 'UTC+5',
-        utc_plus_05_30                      TYPE string VALUE 'UTC+53',
-        utc_plus_06                         TYPE string VALUE 'UTC+6',
-        utc_plus_06_30                      TYPE string VALUE 'UTC+63',
-        utc_plus_07                         TYPE string VALUE 'UTC+7',
-        utc_plus_08                         TYPE string VALUE 'UTC+8',
-        utc_plus_09                         TYPE string VALUE 'UTC+9',
-        utc_plus_10                         TYPE string VALUE 'UTC+10',
-        utc_plus_11                         TYPE string VALUE 'UTC+11',
-        utc_plus_12                         TYPE string VALUE 'UTC+12',
-        utc_plus_13                         TYPE string VALUE 'UTC+13',
-        utc_plus_14                         TYPE string VALUE 'UTC+14',
-        western_africa                      TYPE string VALUE 'WAT',
-        western_europe                      TYPE string VALUE 'WET',
-        western_greenland                   TYPE string VALUE 'GSTW',
+        afghanistan                    TYPE string VALUE 'AFGHAN',
+        alaska_aleutian                TYPE string VALUE 'ALAW',
+        alaska_anchorage               TYPE string VALUE 'ALA',
+        argentina                      TYPE string VALUE 'ART',
+        atlantic_time                  TYPE string VALUE 'AST',
+        australia_eucla                TYPE string VALUE 'AUSEUC',
+        australia_lord_howe_island     TYPE string VALUE 'AUSLHI',
+        australia_new_south_wales      TYPE string VALUE 'AUSNSW',
+        australia_northern_territories TYPE string VALUE 'AUSNT',
+        australia_queensland           TYPE string VALUE 'AUSQLD',
+        australia_south_australia      TYPE string VALUE 'AUSSA',
+        australia_tasmania             TYPE string VALUE 'AUSTAS',
+        australia_victoria             TYPE string VALUE 'AUSVIC',
+        australia_western_australia    TYPE string VALUE 'AUSWA',
+        azerbaijan                     TYPE string VALUE 'AZT',
+        bangladesh                     TYPE string VALUE 'BDT',
+        brazil                         TYPE string VALUE 'BRAZIL',
+        brazil_andes                   TYPE string VALUE 'BRZLAN',
+        brazil_west                    TYPE string VALUE 'BRZLWE',
+        central_africa                 TYPE string VALUE 'CAT',
+        central_europe                 TYPE string VALUE 'CET',
+        central_time                   TYPE string VALUE 'CST',
+        central_time_no_dst            TYPE string VALUE 'CSTNO',
+        central_time_north_america     TYPE string VALUE 'CST_NA',
+        chile                          TYPE string VALUE 'CHILE',
+        chile_easter_island            TYPE string VALUE 'CHILEE',
+        chile_magallanes               TYPE string VALUE 'CHILEM',
+        cyprus                         TYPE string VALUE 'CYPRUS',
+        eastern_europe                 TYPE string VALUE 'EET',
+        eastern_greenland              TYPE string VALUE 'GSTE',
+        eastern_time                   TYPE string VALUE 'EST',
+        eastern_time_north_america     TYPE string VALUE 'EST_NA',
+        egypt                          TYPE string VALUE 'EGYPT',
+        est_without_dst                TYPE string VALUE 'ESTNO',
+        europe_azores                  TYPE string VALUE 'AZOREN',
+        falkland_islands               TYPE string VALUE 'FLKLND',
+        greenland                      TYPE string VALUE 'GST',
+        greenwich_uk_with_dst          TYPE string VALUE 'GMTUK',
+        hawaii                         TYPE string VALUE 'HAW',
+        india                          TYPE string VALUE 'INDIA',
+        iran                           TYPE string VALUE 'IRAN',
+        iraq                           TYPE string VALUE 'IRAQ',
+        israel                         TYPE string VALUE 'ISRAEL',
+        japan                          TYPE string VALUE 'JAPAN',
+        jordan                         TYPE string VALUE 'JORDAN',
+        lebanon                        TYPE string VALUE 'LBANON',
+        mauritius                      TYPE string VALUE 'MAU',
+        morocco                        TYPE string VALUE 'MOROCC',
+        mountain_time                  TYPE string VALUE 'MST',
+        mountain_time_north_america    TYPE string VALUE 'MST_NA',
+        mountain_time_phoenix          TYPE string VALUE 'MSTNO',
+        nepal                          TYPE string VALUE 'NEPAL',
+        new_zealand                    TYPE string VALUE 'NZST',
+        new_zealand_chatham_islands    TYPE string VALUE 'NZCHA',
+        newfoundland                   TYPE string VALUE 'NST',
+        norfolk_islands                TYPE string VALUE 'NORFLK',
+        pacific_time                   TYPE string VALUE 'PST',
+        pakistan                       TYPE string VALUE 'PKT',
+        paraguay                       TYPE string VALUE 'PARAGY',
+        republic_of_fiji               TYPE string VALUE 'FIJI',
+        republic_of_moldova            TYPE string VALUE 'MOLDVA',
+        russia_msk                     TYPE string VALUE 'RUS03',
+        russia_msk_minus_01            TYPE string VALUE 'RUS02',
+        russia_msk_plus_01             TYPE string VALUE 'RUS04',
+        russia_msk_plus_02             TYPE string VALUE 'RUS05',
+        russia_msk_plus_03             TYPE string VALUE 'RUS06',
+        russia_msk_plus_04             TYPE string VALUE 'RUS07',
+        russia_msk_plus_05             TYPE string VALUE 'RUS08',
+        russia_msk_plus_06             TYPE string VALUE 'RUS09',
+        russia_msk_plus_07             TYPE string VALUE 'RUS10',
+        russia_msk_plus_08             TYPE string VALUE 'RUS11',
+        russia_msk_plus_09             TYPE string VALUE 'RUS12',
+        saint_pierre_miquelon          TYPE string VALUE 'PIERRE',
+        syria                          TYPE string VALUE 'SYRIA',
+        turkey                         TYPE string VALUE 'TURKEY',
+        uruguay                        TYPE string VALUE 'URUGUA',
+        utc                            TYPE string VALUE 'UTC',
+        utc_minus_01                   TYPE string VALUE 'UTC-1',
+        utc_minus_02                   TYPE string VALUE 'UTC-2',
+        utc_minus_03                   TYPE string VALUE 'UTC-3',
+        utc_minus_04                   TYPE string VALUE 'UTC-4',
+        utc_minus_05                   TYPE string VALUE 'UTC-5',
+        utc_minus_06                   TYPE string VALUE 'UTC-6',
+        utc_minus_07                   TYPE string VALUE 'UTC-7',
+        utc_minus_08                   TYPE string VALUE 'UTC-8',
+        utc_minus_09                   TYPE string VALUE 'UTC-9',
+        utc_minus_10                   TYPE string VALUE 'UTC-10',
+        utc_minus_11                   TYPE string VALUE 'UTC-11',
+        utc_minus_12                   TYPE string VALUE 'UTC-12',
+        utc_minus_13                   TYPE string VALUE 'UTC-13',
+        utc_minus_14                   TYPE string VALUE 'UTC-14',
+        utc_plus_01                    TYPE string VALUE 'UTC+1',
+        utc_plus_02                    TYPE string VALUE 'UTC+2',
+        utc_plus_03                    TYPE string VALUE 'UTC+3',
+        utc_plus_04                    TYPE string VALUE 'UTC+4',
+        utc_plus_05                    TYPE string VALUE 'UTC+5',
+        utc_plus_05_30                 TYPE string VALUE 'UTC+53',
+        utc_plus_06                    TYPE string VALUE 'UTC+6',
+        utc_plus_06_30                 TYPE string VALUE 'UTC+63',
+        utc_plus_07                    TYPE string VALUE 'UTC+7',
+        utc_plus_08                    TYPE string VALUE 'UTC+8',
+        utc_plus_09                    TYPE string VALUE 'UTC+9',
+        utc_plus_10                    TYPE string VALUE 'UTC+10',
+        utc_plus_11                    TYPE string VALUE 'UTC+11',
+        utc_plus_12                    TYPE string VALUE 'UTC+12',
+        utc_plus_13                    TYPE string VALUE 'UTC+13',
+        utc_plus_14                    TYPE string VALUE 'UTC+14',
+        western_africa                 TYPE string VALUE 'WAT',
+        western_europe                 TYPE string VALUE 'WET',
+        western_greenland              TYPE string VALUE 'GSTW',
       END OF c_timezone.
 
     TYPES:
@@ -350,7 +350,7 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD from.
 
-    GET REFERENCE OF data INTO data_ref.
+    data_ref = REF #( data ).
     typekind = cl_abap_typedescr=>describe_by_data( data )->type_kind.
 
     result = me.
@@ -626,9 +626,13 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
           CATCH cx_root.
             RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
         ENDTRY.
+
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
     ENDCASE.
 
-    IF result <> xstring_data.
+    " Check for trimmed values
+    IF xstrlen( result ) <> xstrlen( xstring_data ).
       RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
     ENDIF.
 
@@ -944,14 +948,15 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
     " Number of non-leap seconds which have passed since 00:00:00 UTC on Thursday, 1 January 1970
     " https://en.wikipedia.org/wiki/Unix_time
+    TYPES ty_seconds TYPE p LENGTH 15 DECIMALS 0.
 
     TRY.
         DATA(timestamp_long) = to_timestampl( timezone ).
         DATA(epoch)          = CONV timestampl( '19700101000000' ).
 
-        DATA(unixtime) = floor( cl_abap_tstmp=>subtract(
+        DATA(unixtime) = CONV ty_seconds( floor( cl_abap_tstmp=>subtract(
           tstmp1 = timestamp_long
-          tstmp2 = epoch ) ).
+          tstmp2 = epoch ) ) ).
 
         result = condense( CONV string( unixtime ) ).
       CATCH cx_root.
@@ -1061,7 +1066,9 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
   METHOD _conversion_error.
 
-    result = |Unable to convert { to_typetext( ) } to { datatype }|.
+    result = 'Unable to convert &1 to &2'(037).
+    result = replace( val = result sub = '&1' with = to_typetext( ) ).
+    result = replace( val = result sub = '&2' with = datatype ).
 
   ENDMETHOD.
 ENDCLASS.
