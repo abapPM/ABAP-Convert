@@ -3,7 +3,7 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 ************************************************************************
 * Convert Any Data Type
 *
-* Copyright 2024 apm.to Inc. <https://apm.to>
+* Copyright 2026 apm.to Inc. <https://apm.to>
 * SPDX-License-Identifier: MIT
 ************************************************************************
 
@@ -13,7 +13,7 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
   PUBLIC SECTION.
 
-    CONSTANTS c_version TYPE string VALUE '1.0.0' ##NEEDED.
+    CONSTANTS c_version TYPE string VALUE '1.0.1' ##NEEDED.
 
     CONSTANTS:
       BEGIN OF c_encoding,
@@ -320,7 +320,8 @@ CLASS /apmg/cl_convert DEFINITION PUBLIC CREATE PUBLIC.
 
     METHODS _conversion_error
       IMPORTING
-        datatype      TYPE string
+        type          TYPE string
+        err           TYPE REF TO cx_root OPTIONAL
       RETURNING
         VALUE(result) TYPE string.
 
@@ -421,8 +422,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(string_data) = to_string( ).
             result = string_data.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'char' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'char' err = error )
+                previous = error.
         ENDTRY.
 
         IF condense( result ) <> condense( string_data ).
@@ -449,16 +453,22 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV d( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'date' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_packed.
 
         TRY.
             CONVERT TIME STAMP <data> TIME ZONE timezone INTO DATE result.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'date' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_utclong.
@@ -466,8 +476,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(timestampl) = to_timestampl( timezone ).
             CONVERT TIME STAMP timestampl TIME ZONE timezone INTO DATE result.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'date' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'date' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -482,8 +495,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     TRY.
         DATA(decfloat34) = to_decfloat34( ).
         result = CONV decfloat16( decfloat34 ).
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat16' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'decfloat16' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -508,8 +524,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV decfloat34( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'decfloat34' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -523,8 +542,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(string_data) = to_string( ).
             result = CONV decfloat34( string_data ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'decfloat34' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'decfloat34' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -549,8 +571,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     TRY.
         DATA(ms) = CONV ty_ms( millisec ).
         result = to_unixtime( timezone ) && ms.
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'epoch' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'epoch' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -575,8 +600,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV f( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'float' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -590,8 +618,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(string_data) = to_string( ).
             result = CONV f( string_data ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'float' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'float' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -611,8 +642,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
             " No encoding
             DATA(xstring_data) = to_xstring( encoding = '' ).
             result = xstring_data.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'hex' err = error )
+                previous = error.
         ENDTRY.
 
 
@@ -623,8 +657,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
             " With encoding
             xstring_data = to_xstring( encoding = encoding ).
             result = xstring_data.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'hex' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'hex' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -644,8 +681,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     TRY.
         DATA(int8) = to_int8( ).
         result = CONV i( int8 ).
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'integer' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'integer' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -672,8 +712,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV int8( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'int8' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'int8' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -685,8 +728,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(string_data) = to_string( ).
             result = CONV int8( string_data ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'int8' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'int8' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -704,8 +750,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
     TRY.
         DATA(timestampl) = to_timestampl( timezone ).
         result = |{ timestampl TIMESTAMP = ISO }|.
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'isotime' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'isotime' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -732,8 +781,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = <data>.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'packed' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'packed' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -747,8 +799,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(string_data) = to_string( ).
             result = string_data.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'packed' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'packed' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -787,8 +842,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             result = CONV string( <data> ).
             " FIXME? Might have a trailing space. Should we trim it?
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'string' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_hex
@@ -810,8 +868,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
                 iv_xstring = xstring_data
               RECEIVING
                 rv_string  = result.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'string' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_table.
@@ -824,8 +885,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
             result = concat_lines_of(
               table = <table>
               sep   = cl_abap_char_utilities=>newline ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'string' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'string' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -852,16 +916,22 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(time_text) = to_string( ).
             result = CONV t( time_text ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'time' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_time.
 
         TRY.
             result = <data>.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'time' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'time' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -882,8 +952,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
           RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
         ENDIF.
         result = timestampl ##TYPE.
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestamp' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'timestamp' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -904,24 +977,33 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV timestampl( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'timestampl' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_date.
 
         TRY.
             CONVERT DATE <data> INTO TIME STAMP result TIME ZONE timezone.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'timestampl' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_utclong.
 
         TRY.
             result = cl_abap_tstmp=>utclong2tstmp( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'timestampl' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'timestampl' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -962,8 +1044,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
           tstmp2 = epoch ) ) ).
 
         result = condense( CONV string( unixtime ) ).
-      CATCH cx_root.
-        RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'unixtime' ).
+      CATCH cx_root INTO DATA(error).
+        RAISE EXCEPTION TYPE /apmg/cx_error_text
+          EXPORTING
+            text     = _conversion_error( type = 'unixtime' err = error )
+            previous = error.
     ENDTRY.
 
   ENDMETHOD.
@@ -987,16 +1072,22 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
         TRY.
             DATA(timestamp_long) = to_timestampl( timezone ).
             result = cl_abap_tstmp=>tstmp2utclong( timestamp_long ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'utclong' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_date.
 
         TRY.
             CONVERT DATE <data> TIME t TIME ZONE timezone INTO UTCLONG result.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'utclong' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'utclong' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -1024,8 +1115,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
         TRY.
             result = CONV xstring( <data> ).
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
+          CATCH cx_root INTO DATA(error).
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'xstring' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN cl_abap_typedescr=>typekind_char
@@ -1060,8 +1154,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
                 iv_string  = string_data
               RECEIVING
                 rv_xstring = result.
-          CATCH cx_root.
-            RAISE EXCEPTION TYPE /apmg/cx_error_text EXPORTING text = _conversion_error( 'xstring' ).
+          CATCH cx_root INTO error.
+            RAISE EXCEPTION TYPE /apmg/cx_error_text
+              EXPORTING
+                text     = _conversion_error( type = 'xstring' err = error )
+                previous = error.
         ENDTRY.
 
       WHEN OTHERS.
@@ -1075,7 +1172,11 @@ CLASS /apmg/cl_convert IMPLEMENTATION.
 
     result = 'Unable to convert &1 to &2'(037).
     result = replace( val = result sub = '&1' with = to_typetext( ) ).
-    result = replace( val = result sub = '&2' with = datatype ).
+    result = replace( val = result sub = '&2' with = type ).
+
+    IF err IS NOT INITIAL.
+      result = result && `: ` && err->get_text( ).
+    ENDIF.
 
   ENDMETHOD.
 ENDCLASS.
